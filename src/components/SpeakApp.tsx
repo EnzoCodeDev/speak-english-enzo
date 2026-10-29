@@ -3,8 +3,8 @@
 import { useCallback, useEffect, useEffectEvent, useRef, useState, useSyncExternalStore } from "react";
 import clsx from "clsx";
 import {
-  ArrowRight, ChartColumn, Eye, Flame, Hand, Lock, Mic, RotateCcw, Settings2, Snail, Square,
-  TriangleAlert, Volume2, X,
+  ArrowRight, ChartColumn, ChevronDown, Eye, Flame, Hand, Lock, Mic, RotateCcw, Settings2, Snail, Square,
+  TriangleAlert, Volume2,
 } from "lucide-react";
 import { PHRASES } from "@/data/phrases";
 import { cleanChunks, evaluateBest, normalize, type Chunk, type Evaluation, type WordResult } from "@/lib/scoring";
@@ -12,7 +12,7 @@ import {
   RECOGNITION_ERRORS, getRecognizerCtor, isMobile, speak, stopSpeaking, type Recognizer,
 } from "@/lib/speech";
 import {
-  SET_VALUES, STORAGE_KEY, advance, catLabel, defaultState, fromImported, optionLabel, progressOf,
+  CAT_VALUES, SET_VALUES, STORAGE_KEY, advance, catLabel, defaultState, fromImported, optionLabel, progressOf,
   recordAttempt, roundsDone, setCategory, updateSettings, type Settings,
 } from "@/lib/state";
 import { Store } from "@/lib/store";
@@ -315,23 +315,32 @@ export default function SpeakApp() {
 
   const progress = progressOf(S);
   const active = S.settings.category;
-  const isCategory = active.startsWith("cat:");
   const scoreTone = score === null ? "none" : score >= threshold ? "good" : score >= threshold - 20 ? "meh" : "bad";
 
+  const optionText = (v: string) => {
+    const p = progressOf(S, v);
+    const r = roundsDone(S, v);
+    return `${optionLabel(v)} · ${p.done}/${p.total}${r ? ` · ${r} ${r === 1 ? "ronda" : "rondas"}` : ""}`;
+  };
+
+  const roundBtn = "grid size-12 place-items-center rounded-full border border-ink-700 text-ink-100 transition hover:border-ink-600 hover:bg-ink-850 active:scale-95";
+  const pillBtn = "inline-flex items-center gap-2 rounded-xl border border-ink-700 px-4 py-2.5 text-sm font-medium text-ink-100 transition hover:border-ink-600 hover:bg-ink-850";
+
   return (
-    <div className="mx-auto flex min-h-dvh max-w-5xl flex-col px-4 pb-8 sm:px-6">
+    // En móvil la app ocupa exactamente la pantalla (sin scroll de página); en escritorio fluye normal.
+    <div className="mx-auto flex h-dvh max-w-5xl flex-col overflow-hidden px-3 pb-3 sm:px-6 md:h-auto md:min-h-dvh md:overflow-visible md:pb-8">
       {/* ---------- cabecera ---------- */}
-      <header className="flex items-center justify-between gap-4 pt-5 sm:pt-7">
-        <div className="flex items-center gap-3">
-          <span className="grid size-11 place-items-center rounded-2xl bg-signal text-ink-950 shadow-[0_10px_30px_-10px_var(--color-signal)]">
-            <Mic className="size-5" strokeWidth={2.4} />
+      <header className="flex shrink-0 items-center justify-between gap-3 pt-3 md:pt-7">
+        <div className="flex min-w-0 items-center gap-2.5 md:gap-3">
+          <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-signal text-ink-950 shadow-[0_10px_30px_-10px_var(--color-signal)] md:size-11 md:rounded-2xl">
+            <Mic className="size-[18px] md:size-5" strokeWidth={2.4} />
           </span>
-          <div>
-            <h1 className="font-display text-lg leading-tight font-bold tracking-tight sm:text-xl">Speak English Enzo</h1>
-            <p className="text-xs text-ink-400">150 frases para hablar en VRChat</p>
+          <div className="min-w-0">
+            <h1 className="truncate font-display text-base leading-tight font-bold tracking-tight md:text-xl">Speak English Enzo</h1>
+            <p className="hidden text-xs text-ink-400 sm:block">150 frases para hablar en VRChat</p>
           </div>
         </div>
-        <div className="flex gap-2">
+        <div className="flex shrink-0 gap-2">
           <IconButton label="Estadísticas" onClick={() => setPanel("stats")}>
             <ChartColumn className="size-[18px]" />
           </IconButton>
@@ -342,50 +351,27 @@ export default function SpeakApp() {
       </header>
 
       {/* ---------- qué practicar + progreso ---------- */}
-      <nav className="mt-8 flex flex-wrap items-center justify-between gap-3" aria-label="Qué practicar">
-        <div className="flex max-w-full gap-1 overflow-x-auto rounded-2xl border border-ink-800 bg-ink-900/70 p-1">
-          {SET_VALUES.map((v) => {
-            const p = progressOf(S, v);
-            const on = v === active;
-            const r = roundsDone(S, v);
-            return (
-              <button
-                key={v}
-                type="button"
-                onClick={() => !on && chooseCategory(v)}
-                aria-pressed={on}
-                title={r ? `${r} ${r === 1 ? "ronda completa" : "rondas completas"}` : "Sin rondas completas"}
-                className={clsx(
-                  "flex shrink-0 items-baseline gap-2 rounded-xl px-3.5 py-2 text-sm font-medium transition duration-200",
-                  on ? "bg-ink-800 text-ink-100 shadow-[0_6px_16px_-8px_rgb(0_0_0/0.8)]" : "text-ink-400 hover:text-ink-100",
-                )}
-              >
-                {optionLabel(v)}
-                <span className={clsx("font-mono text-[11px] tabular-nums", on ? "text-signal" : "text-ink-400")}>
-                  {p.done}/{p.total}
-                </span>
-              </button>
-            );
-          })}
-          {isCategory && (
-            <span className="flex shrink-0 items-center gap-1.5 rounded-xl bg-ink-800 py-2 pr-1.5 pl-3.5 text-sm font-medium text-ink-100">
-              {optionLabel(active)}
-              <span className="font-mono text-[11px] text-signal tabular-nums">{progress.done}/{progress.total}</span>
-              <button
-                type="button"
-                onClick={() => chooseCategory("set:set1")}
-                aria-label="Volver a las tandas"
-                className="grid size-6 place-items-center rounded-lg text-ink-400 hover:bg-ink-700 hover:text-ink-100"
-              >
-                <X className="size-3.5" />
-              </button>
-            </span>
-          )}
-        </div>
-        <div className="flex items-center gap-4 text-sm text-ink-400">
+      <nav className="mt-3 flex shrink-0 items-center justify-between gap-3 md:mt-8" aria-label="Qué practicar">
+        <label className="relative min-w-0 flex-1 sm:max-w-xs">
+          <span className="sr-only">Qué practicar</span>
+          <select
+            value={active}
+            onChange={(e) => chooseCategory(e.target.value)}
+            className="w-full appearance-none truncate rounded-xl border border-ink-800 bg-ink-900 py-2.5 pr-10 pl-3.5 text-sm font-medium text-ink-100 transition hover:border-ink-600 focus-visible:border-signal"
+          >
+            <optgroup label="Tandas">
+              {SET_VALUES.map((v) => <option key={v} value={v}>{optionText(v)}</option>)}
+            </optgroup>
+            <optgroup label="Categorías">
+              {CAT_VALUES.map((v) => <option key={v} value={v}>{optionText(v)}</option>)}
+            </optgroup>
+          </select>
+          <ChevronDown className="pointer-events-none absolute top-1/2 right-3 size-4 -translate-y-1/2 text-ink-400" />
+        </label>
+        <div className="flex shrink-0 items-center gap-3 text-sm text-ink-400 md:gap-4">
           <span className="font-mono tabular-nums">Ronda {progress.round}</span>
           <span
-            className={clsx("flex items-center gap-1.5 font-mono tabular-nums", S.streak > 0 ? "text-signal" : "text-ink-400")}
+            className={clsx("flex items-center gap-1 font-mono tabular-nums", S.streak > 0 ? "text-signal" : "text-ink-400")}
             title="Aciertos seguidos"
           >
             <Flame className="size-4" /> {S.streak}
@@ -393,7 +379,7 @@ export default function SpeakApp() {
         </div>
       </nav>
 
-      <div className="mt-4 h-1 overflow-hidden rounded-full bg-ink-800" role="progressbar"
+      <div className="mt-3 h-1 shrink-0 overflow-hidden rounded-full bg-ink-800 md:mt-4" role="progressbar"
         aria-valuemin={0} aria-valuemax={progress.total} aria-valuenow={progress.done}
         aria-label={`${progress.done} de ${progress.total} frases dominadas`}>
         <div className="h-full rounded-full bg-signal transition-[width] duration-700 ease-[var(--ease-out-expo)]"
@@ -401,8 +387,8 @@ export default function SpeakApp() {
       </div>
 
       {/* ---------- escenario ---------- */}
-      <main className="relative mt-6 flex flex-1 flex-col rounded-[28px] border border-ink-800 bg-ink-900/80 shadow-[0_40px_100px_-40px_rgb(0_0_0/0.8)]">
-        <div className="flex-1 px-6 pt-7 pb-8 sm:px-12 sm:pt-10">
+      <main className="relative mt-3 flex min-h-0 flex-1 flex-col rounded-3xl border border-ink-800 bg-ink-900/80 shadow-[0_40px_100px_-40px_rgb(0_0_0/0.8)] md:mt-6 md:rounded-[28px]">
+        <div className="flex min-h-0 flex-1 flex-col overflow-y-auto px-5 pt-4 pb-4 md:px-12 md:pt-10 md:pb-8">
           <div className="flex items-center justify-between text-xs font-medium text-ink-400">
             <span className="flex items-center gap-2">
               <span className="size-1.5 rounded-full bg-signal" />
@@ -412,44 +398,45 @@ export default function SpeakApp() {
               Aciertos
               <span className="flex gap-1">
                 {Array.from({ length: hitsNeeded }, (_, i) => (
-                  <span key={i} className={clsx("h-1.5 w-5 rounded-full transition-colors duration-300", i < hits ? "bg-good" : "bg-ink-700")} />
+                  <span key={i} className={clsx("h-1.5 w-4 rounded-full transition-colors duration-300 md:w-5", i < hits ? "bg-good" : "bg-ink-700")} />
                 ))}
               </span>
             </span>
           </div>
 
-          <div key={phraseIndex} className="mt-8 animate-rise sm:mt-12">
+          <div key={phraseIndex} className="my-auto py-2 animate-rise md:my-0 md:mt-12 md:py-0">
             <PhraseText text={phrase[0]} activeKey={popover?.key ?? null} onPick={pickWord} />
             {S.settings.hideEs && !revealEs ? (
               <button type="button" onClick={() => setRevealEs(true)}
-                className="mt-5 inline-flex items-center gap-2 rounded-lg text-lg text-ink-400 transition hover:text-ink-300">
+                className="mt-3 inline-flex items-center gap-2 rounded-lg text-base text-ink-400 transition hover:text-ink-300 md:mt-5 md:text-lg">
                 <Eye className="size-4" />
                 <span className="blur-[6px] select-none" aria-hidden="true">{phrase[1]}</span>
                 <span className="sr-only">Mostrar traducción</span>
               </button>
             ) : (
-              <p className="mt-5 text-lg text-ink-300 sm:text-xl">{phrase[1]}</p>
+              <p className="mt-3 text-base text-ink-300 md:mt-5 md:text-xl">{phrase[1]}</p>
             )}
-            <p className="mt-6 flex items-center gap-2 text-xs text-ink-400">
-              <Hand className="size-3.5" /> Toca cualquier palabra para ver qué significa y cómo se pronuncia
-            </p>
+            {!words && (
+              <p className="mt-4 flex items-center gap-2 text-xs text-ink-400 md:mt-6">
+                <Hand className="size-3.5 shrink-0" /> Toca una palabra para ver qué significa y cómo suena
+              </p>
+            )}
+            {words && (
+              <div className="mt-3 border-t border-ink-800 pt-3 md:mt-8 md:pt-6">
+                <WordFeedback words={words} onPick={pickWord} />
+              </div>
+            )}
           </div>
-
-          {words && (
-            <div className="mt-8 border-t border-ink-800 pt-6">
-              <WordFeedback words={words} onPick={pickWord} />
-            </div>
-          )}
         </div>
 
         {/* ---------- consola ---------- */}
-        <div className="rounded-b-[28px] border-t border-ink-800 bg-ink-950/40 px-6 py-6 sm:px-12 sm:py-8">
-          <div className="grid items-center gap-8 md:grid-cols-[1fr_auto_1fr]">
-            {/* puntuación */}
-            <div className="order-2 md:order-1">
-              <div className="flex items-baseline gap-1">
+        <div className="shrink-0 rounded-b-3xl border-t border-ink-800 bg-ink-950/40 px-4 py-3.5 md:rounded-b-[28px] md:px-12 md:py-8">
+          <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-x-4 gap-y-3 md:gap-8">
+            {/* puntuación: fila completa en móvil, columna izquierda en escritorio */}
+            <div className="col-span-3 flex items-center gap-3 md:col-span-1 md:block">
+              <div className="flex shrink-0 items-baseline gap-1">
                 <span className={clsx(
-                  "font-mono text-5xl font-semibold tracking-tight tabular-nums transition-colors",
+                  "font-mono text-3xl font-semibold tracking-tight tabular-nums transition-colors md:text-5xl",
                   scoreTone === "none" && "text-ink-600",
                   scoreTone === "good" && "text-good",
                   scoreTone === "meh" && "text-meh",
@@ -457,10 +444,10 @@ export default function SpeakApp() {
                 )}>
                   {score ?? "––"}
                 </span>
-                <span className="font-mono text-lg text-ink-400">%</span>
-                <span className="ml-2 text-xs text-ink-400">precisión</span>
+                <span className="font-mono text-base text-ink-400 md:text-lg">%</span>
+                <span className="ml-2 hidden text-xs text-ink-400 md:inline">precisión</span>
               </div>
-              <div className="relative mt-3 h-2 rounded-full bg-ink-800">
+              <div className="relative h-2 flex-1 rounded-full bg-ink-800 md:mt-3">
                 <div
                   className={clsx(
                     "h-full rounded-full transition-[width] duration-700 ease-[var(--ease-out-expo)]",
@@ -471,14 +458,21 @@ export default function SpeakApp() {
                 <span className="absolute -top-1 h-4 w-0.5 rounded-full bg-ink-100" style={{ left: `${threshold}%` }}
                   title={`Mínimo: ${threshold}%`} />
               </div>
-              <p className="mt-2 text-xs text-ink-400">
+              <p className="mt-2 hidden text-xs text-ink-400 md:block">
                 Necesitas <b className="font-mono text-ink-300">{threshold}%</b> y{" "}
                 <b className="font-mono text-ink-300">{hitsNeeded}</b> {hitsNeeded === 1 ? "acierto" : "aciertos seguidos"}.
               </p>
             </div>
 
+            {/* escuchar (móvil: a la izquierda del micro) */}
+            <div className="flex justify-end md:hidden">
+              <button type="button" onClick={() => say(phrase[0])} aria-label="Escuchar la frase" className={roundBtn}>
+                <Volume2 className="size-5" />
+              </button>
+            </div>
+
             {/* micrófono */}
-            <div className="order-1 flex flex-col items-center md:order-2">
+            <div className="flex flex-col items-center">
               {supported ? (
                 <>
                   <button
@@ -486,7 +480,7 @@ export default function SpeakApp() {
                     onClick={toggleMic}
                     aria-label={recording ? "Detener" : "Hablar"}
                     className={clsx(
-                      "relative grid size-24 place-items-center rounded-full transition duration-300 ease-[var(--ease-out-expo)] active:scale-95",
+                      "relative grid size-[72px] place-items-center rounded-full transition duration-300 ease-[var(--ease-out-expo)] active:scale-95 md:size-24",
                       recording
                         ? "bg-bad text-ink-950 shadow-[0_18px_50px_-12px_var(--color-bad)]"
                         : "bg-signal text-ink-950 shadow-[0_18px_50px_-14px_var(--color-signal)] hover:scale-105",
@@ -498,39 +492,44 @@ export default function SpeakApp() {
                         <span className="absolute inset-0 rounded-full bg-bad animate-halo [animation-delay:0.8s]" />
                       </>
                     )}
-                    {recording ? <Square className="relative size-7 fill-current" /> : <Mic className="relative size-9" strokeWidth={2.2} />}
+                    {recording
+                      ? <Square className="relative size-6 fill-current md:size-7" />
+                      : <Mic className="relative size-8 md:size-9" strokeWidth={2.2} />}
                   </button>
-                  <span className="mt-3 flex items-center gap-2 text-sm font-medium text-ink-300">
-                    {recording ? "Detener" : "Hablar"} <span className="hidden sm:inline-flex"><Kbd>Espacio</Kbd></span>
+                  <span className="mt-3 hidden items-center gap-2 text-sm font-medium text-ink-300 md:flex">
+                    {recording ? "Detener" : "Hablar"} <Kbd>Espacio</Kbd>
                   </span>
                 </>
               ) : (
-                <div className="max-w-xs rounded-2xl border border-meh/30 bg-meh-soft p-4 text-sm text-ink-100">
+                <div className="max-w-[12rem] rounded-2xl border border-meh/30 bg-meh-soft p-3 text-xs text-ink-100 md:max-w-xs md:p-4 md:text-sm">
                   <p className="flex items-center gap-2 font-semibold text-meh">
-                    <TriangleAlert className="size-4" /> Sin reconocimiento de voz
+                    <TriangleAlert className="size-4 shrink-0" /> Sin reconocimiento de voz
                   </p>
                   <p className="mt-1.5 text-ink-300">
-                    Este navegador no puede escucharte. Abre la app en <b>Chrome</b> o <b>Edge</b> para practicar.
+                    Abre la app en <b>Chrome</b> o <b>Edge</b> para practicar.
                   </p>
                 </div>
               )}
             </div>
 
-            {/* escuchar */}
-            <div className="order-3 flex justify-center gap-2 md:justify-end">
-              <button type="button" onClick={() => say(phrase[0])}
-                className="inline-flex items-center gap-2 rounded-xl border border-ink-700 px-4 py-2.5 text-sm font-medium text-ink-100 transition hover:border-ink-600 hover:bg-ink-850">
-                <Volume2 className="size-4" /> Escuchar <span className="hidden sm:inline-flex"><Kbd>L</Kbd></span>
+            {/* lento (móvil) / escuchar + lento (escritorio) */}
+            <div className="flex justify-start md:hidden">
+              <button type="button" onClick={() => say(phrase[0], 0.55)} aria-label="Escuchar lento" className={roundBtn}>
+                <Snail className="size-5" />
               </button>
-              <button type="button" onClick={() => say(phrase[0], 0.55)}
-                className="inline-flex items-center gap-2 rounded-xl border border-ink-700 px-4 py-2.5 text-sm font-medium text-ink-100 transition hover:border-ink-600 hover:bg-ink-850">
+            </div>
+            <div className="hidden justify-end gap-2 md:flex">
+              <button type="button" onClick={() => say(phrase[0])} className={pillBtn}>
+                <Volume2 className="size-4" /> Escuchar <Kbd>L</Kbd>
+              </button>
+              <button type="button" onClick={() => say(phrase[0], 0.55)} className={pillBtn}>
                 <Snail className="size-4" /> Lento
               </button>
             </div>
           </div>
 
           {/* estado */}
-          <div className="mt-7 flex flex-col gap-4 border-t border-ink-800 pt-5 sm:flex-row sm:items-center sm:justify-between">
+          <div className="mt-4 flex flex-col gap-3 border-t border-ink-800 pt-3 md:mt-7 md:flex-row md:items-center md:justify-between md:gap-4 md:pt-5">
             <div className="min-w-0" aria-live="polite">
               <p className={clsx(
                 "flex items-center gap-2 text-sm font-medium",
@@ -540,14 +539,14 @@ export default function SpeakApp() {
                 status.tone === "bad" && "text-bad",
               )}>
                 {status.tone === "rec" && (
-                  <span className="flex h-4 items-center gap-0.5" aria-hidden="true">
+                  <span className="flex h-4 shrink-0 items-center gap-0.5" aria-hidden="true">
                     {[0, 1, 2, 3].map((i) => (
                       <span key={i} className="h-full w-0.5 origin-center rounded-full bg-bad animate-bar"
                         style={{ animationDelay: `${i * 0.15}s` }} />
                     ))}
                   </span>
                 )}
-                {status.text}
+                <span className="line-clamp-2">{status.text}</span>
               </p>
               {heard && (
                 <p className="mt-1 truncate text-sm text-ink-400">
@@ -555,9 +554,9 @@ export default function SpeakApp() {
                 </p>
               )}
             </div>
-            <div className="flex shrink-0 items-center gap-2">
+            <div className="grid shrink-0 grid-cols-2 gap-2 md:flex md:items-center">
               <button type="button" onClick={retry}
-                className="inline-flex items-center gap-2 rounded-xl px-3.5 py-2.5 text-sm font-medium text-ink-400 transition hover:bg-ink-850 hover:text-ink-100">
+                className="inline-flex items-center justify-center gap-2 rounded-xl border border-ink-800 px-3.5 py-2.5 text-sm font-medium text-ink-300 transition hover:bg-ink-850 hover:text-ink-100 md:border-transparent md:text-ink-400">
                 <RotateCcw className="size-4" /> Reintentar
               </button>
               <button
@@ -566,7 +565,7 @@ export default function SpeakApp() {
                 disabled={!unlocked}
                 title={unlocked ? "Siguiente frase (Enter)" : "Bloqueada hasta que la pronuncies bien"}
                 className={clsx(
-                  "inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold transition duration-300",
+                  "inline-flex items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold transition duration-300",
                   unlocked
                     ? "bg-good text-ink-950 shadow-[0_12px_30px_-12px_var(--color-good)] hover:brightness-110"
                     : "cursor-not-allowed border border-ink-800 bg-ink-850 text-ink-400",
@@ -579,7 +578,7 @@ export default function SpeakApp() {
         </div>
       </main>
 
-      <footer className="mt-6 hidden items-center justify-center gap-5 text-xs text-ink-400 sm:flex">
+      <footer className="mt-6 hidden items-center justify-center gap-5 text-xs text-ink-400 md:flex">
         <span className="flex items-center gap-1.5"><Kbd>Espacio</Kbd> hablar</span>
         <span className="flex items-center gap-1.5"><Kbd>L</Kbd> escuchar</span>
         <span className="flex items-center gap-1.5"><Kbd>Enter</Kbd> siguiente</span>

@@ -14,7 +14,7 @@ export function PhraseText({
 }: { text: string; activeKey: string | null; onPick: (p: WordPick) => void }) {
   const tokens = text.split(/\s+/);
   return (
-    <p className="font-display text-[clamp(2.1rem,5.6vw,4rem)] leading-[1.04] font-bold tracking-[-0.035em] text-balance text-ink-100">
+    <p className="font-display text-[clamp(1.6rem,7vw,2.5rem)] leading-[1.06] md:text-[clamp(2.5rem,5vw,4rem)] md:leading-[1.04] font-bold tracking-[-0.035em] text-balance text-ink-100">
       {tokens.map((token, i) => {
         const clean = strip(token);
         const key = clean.toLowerCase();
