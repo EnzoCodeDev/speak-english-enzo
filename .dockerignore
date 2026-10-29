@@ -12,3 +12,4 @@ Dockerfile
 .dockerignore
 .vscode
 .idea
+docs

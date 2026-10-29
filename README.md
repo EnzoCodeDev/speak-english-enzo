@@ -1,112 +1,379 @@
+<div align="center">
+
+<img src="docs/screenshots/00-portada.png" alt="Speak English Enzo" width="100%">
+
 # 🎙️ Speak English Enzo
 
-App para practicar en voz alta las **150 frases más usadas para conversar en VRChat**,
-agrupadas en tres tandas de 50 y con reconocimiento de voz real. No pasas a la siguiente
-frase hasta que la pronuncias bien, y todo el progreso se guarda en el navegador.
+**Practica en voz alta las 150 frases más usadas para hablar en VRChat.**<br>
+Reconocimiento de voz real: no pasas a la siguiente frase hasta que la pronuncias bien.
 
-Hecha con **Next.js 16** (App Router, export estático), **React 19**, **TypeScript** y **Tailwind CSS 4**.
+[![Abrir la app](https://img.shields.io/badge/▶_Abrir_la_app-speak--english--enzo.enzocode.dev-f2a43a?style=for-the-badge&labelColor=15132a)](https://speak-english-enzo.enzocode.dev)
 
-## Empezar
+![Next.js](https://img.shields.io/badge/Next.js_16-000?logo=nextdotjs&logoColor=white)
+![React](https://img.shields.io/badge/React_19-20232a?logo=react&logoColor=61dafb)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178c6?logo=typescript&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS_4-0f172a?logo=tailwindcss&logoColor=38bdf8)
+![Web Speech API](https://img.shields.io/badge/Web_Speech_API-f2a43a?logo=googlechrome&logoColor=15132a)
+![Caddy](https://img.shields.io/badge/Caddy-1f88c0?logo=caddy&logoColor=white)
+
+</div>
+
+---
+
+## 📚 Índice
+
+- [Qué es](#-qué-es)
+- [Capturas](#-capturas)
+- [Guía de uso](#-guía-de-uso)
+- [Atajos de teclado](#️-atajos-de-teclado)
+- [Ajustes](#️-ajustes)
+- [Cómo se puntúa](#-cómo-se-puntúa)
+- [Problemas frecuentes](#-problemas-frecuentes)
+- [Desarrollo](#️-desarrollo)
+- [Estructura del proyecto](#️-estructura-del-proyecto)
+- [Despliegue](#-despliegue)
+
+---
+
+## ✨ Qué es
+
+Speak English Enzo es una app web para **entrenar la pronunciación** con frases reales de
+conversación en VRChat: preguntas para que la charla siga, reacciones, problemas de micro y
+voz, avatares y planes para ir a otro mundo. **No hay saludos ni despedidas**, que ya se dan por
+sabidos.
+
+| | |
+|---|---|
+| 🎯 **150 frases** | Tres tandas de 50, escritas solo con las **200 palabras** más frecuentes del inglés hablado y el vocabulario de VRChat. |
+| 🎤 **Voz real** | El navegador te escucha y la app puntúa cada palabra de 0 a 100 %. |
+| 🔒 **Sin trampas** | La frase se desbloquea solo al superar el **80 % dos veces seguidas**. |
+| 📖 **Diccionario** | Toca cualquier palabra: significado, pronunciación escrita para hispanohablantes y audio. |
+| 🔁 **Sin repeticiones** | Una frase dominada no vuelve a salir hasta terminar el ciclo de su tanda. |
+| 💾 **Progreso guardado** | Todo se queda en tu navegador; puedes exportarlo e importarlo. |
+| 📱 **Móvil** | Diseño adaptado que cabe en la pantalla sin hacer scroll. |
+
+---
+
+## 📸 Capturas
+
+<table>
+  <tr>
+    <td width="50%"><img src="docs/screenshots/01-inicio.png" alt="Pantalla principal"></td>
+    <td width="50%"><img src="docs/screenshots/02-grabando.png" alt="Grabando"></td>
+  </tr>
+  <tr>
+    <td align="center"><b>Pantalla principal</b><br><sub>La frase, su traducción y la consola de práctica.</sub></td>
+    <td align="center"><b>Escuchando</b><br><sub>El micro se pone rojo mientras hablas.</sub></td>
+  </tr>
+  <tr>
+    <td><img src="docs/screenshots/03-resultado.png" alt="Resultado palabra por palabra"></td>
+    <td><img src="docs/screenshots/04-dominada.png" alt="Frase dominada"></td>
+  </tr>
+  <tr>
+    <td align="center"><b>Resultado palabra por palabra</b><br><sub>Verde bien, amarillo regular, rojo mal.</sub></td>
+    <td align="center"><b>Frase dominada</b><br><sub>Dos aciertos seguidos desbloquean <i>Siguiente</i>.</sub></td>
+  </tr>
+  <tr>
+    <td><img src="docs/screenshots/05-diccionario.png" alt="Diccionario"></td>
+    <td><img src="docs/screenshots/07-estadisticas.png" alt="Estadísticas"></td>
+  </tr>
+  <tr>
+    <td align="center"><b>Diccionario</b><br><sub>Significado, pronunciación y audio de cada palabra.</sub></td>
+    <td align="center"><b>Tu progreso</b><br><sub>Dominadas, precisión, rachas y las frases que más cuestan.</sub></td>
+  </tr>
+</table>
+
+<table>
+  <tr>
+    <td width="34%"><img src="docs/screenshots/06-ajustes.png" alt="Ajustes"></td>
+    <td width="33%" align="center"><img src="docs/screenshots/08-movil.png" alt="Móvil" width="230"></td>
+    <td width="33%" align="center"><img src="docs/screenshots/09-movil-resultado.png" alt="Móvil con resultado" width="230"></td>
+  </tr>
+  <tr>
+    <td align="center"><b>Ajustes</b></td>
+    <td align="center"><b>Móvil</b></td>
+    <td align="center"><b>Móvil con resultado</b></td>
+  </tr>
+</table>
+
+---
+
+## 🧭 Guía de uso
+
+> [!IMPORTANT]
+> Usa **Google Chrome** o **Microsoft Edge** (en ordenador o Android). Firefox y Safari no
+> soportan el reconocimiento de voz del navegador. La primera vez el navegador te pedirá
+> **permiso para usar el micrófono**: acéptalo.
+
+### 1. Elige una tanda
+
+En el selector de arriba eliges qué practicar: **Tanda 1**, **Tanda 2** o **Tanda 3** (la que
+viene activa). Cada opción muestra cuántas frases llevas dominadas, por ejemplo
+`Tanda 3 · 18/50`, y cuántas rondas completas tienes. La barra naranja de debajo es tu avance en
+la tanda actual.
+
+### 2. Escucha la frase
+
+La frase aparece en grande con su traducción debajo y **se lee sola** al aparecer.
+
+- **🔊 Escuchar** (o la tecla `L`) la repite a velocidad normal.
+- **🐢 Lento** la repite despacio para fijarte en cada sonido.
+
+### 3. Toca las palabras que no conozcas
+
+Toca cualquier palabra y aparece un recuadro con:
+
+- el **significado** en español,
+- **cómo se pronuncia**, escrito para hispanohablantes con la sílaba fuerte en mayúsculas
+  (`avatar` → `Á-va-tar`, `give` → `GUIV`),
+- el botón 🔊 para oírla otra vez (además suena sola al tocarla).
+
+### 4. Pulsa el micrófono y repítela
+
+Pulsa el botón naranja (o `Espacio`). Espera a ver **«Escuchando… habla ahora»** y di la frase
+completa. Cuando te callas un momento, la app deja de escuchar sola; también puedes pulsar
+**Detener**.
+
+> [!TIP]
+> Si empiezas a hablar antes de que aparezca «Escuchando…», se pierde el principio de la frase y
+> la app te avisará con *«Solo escuché X de Y palabras»*.
+
+### 5. Revisa el resultado
+
+- La **puntuación** (0–100 %) aparece con una barra; la rayita blanca marca el mínimo (80 %).
+- Debajo de la frase ves **cada palabra coloreada**: 🟢 bien · 🟡 regular · 🔴 mal.
+  Toca una palabra roja para oír cómo se dice.
+- Los dos indicadores de **Aciertos** (arriba a la derecha) se llenan con cada intento bueno.
+
+### 6. Domina la frase y pasa a la siguiente
+
+Necesitas superar el mínimo **dos veces seguidas**. Si fallas, los aciertos vuelven a cero.
+Cuando la dominas, **Siguiente** se pone verde: púlsalo (o `Enter`).
+
+La frase dominada no vuelve a salir hasta que completes todas las de la tanda. Al terminarlas
+empieza la **ronda 2** con todas barajadas otra vez. Cada tanda lleva su propio contador de
+rondas.
+
+### 7. Mira tu progreso
+
+El botón 📊 abre **Tu progreso**: frases dominadas, intentos, precisión media, tasa de acierto,
+mejor racha, avance por tanda y el **top 10 de frases que más te cuestan**. La 🔥 de arriba es tu
+racha actual de aciertos seguidos.
+
+---
+
+## ⌨️ Atajos de teclado
+
+| Tecla | Acción |
+|:---:|---|
+| `Espacio` | Empezar / parar el micrófono |
+| `L` | Escuchar la frase |
+| `Enter` | Siguiente frase (si está desbloqueada) |
+| `Esc` | Cerrar el recuadro de la palabra o el panel abierto |
+
+---
+
+## ⚙️ Ajustes
+
+El botón ⚙️ abre el panel de ajustes:
+
+| Ajuste | Qué hace | Por defecto |
+|---|---|:---:|
+| **Tanda** | Qué tanda practicar (lo mismo que el selector de arriba) | Tanda 3 |
+| **Precisión mínima** | Puntuación necesaria para que un intento cuente (50–100 %) | 80 % |
+| **Aciertos seguidos** | Cuántas veces seguidas hay que decirla bien (1–5) | 2 |
+| **Acento** | Voz y reconocimiento en inglés americano, británico, australiano o canadiense | en-US |
+| **Leer la frase al aparecer** | Reproduce la frase automáticamente | Sí |
+| **Ocultar la traducción** | Modo difícil: la traducción sale borrosa y se ve al tocarla | No |
+| **Exportar / Importar** | Guarda tu progreso en un `.json` o lo recupera | — |
+| **Borrar todo** | Empieza de cero (pide confirmación) | — |
+
+> [!NOTE]
+> El progreso se guarda **en el navegador y por dirección**: lo que practiques en
+> `localhost:8082` no aparece en la web publicada, ni al revés. Para llevártelo, usa
+> **Exportar** en un sitio e **Importar** en el otro.
+
+---
+
+## 🧮 Cómo se puntúa
+
+1. **Normalización.** Lo que dijiste y la frase objetivo se pasan a minúsculas, sin puntuación,
+   con las contracciones desplegadas (`I'm` → `i am`, `gonna` → `going to`), los números en
+   letra y grafías equivalentes unificadas (`OK` → `okay`, `mike` → `mic`).
+2. **Alineación palabra a palabra** (Needleman-Wunsch) para saber qué palabra de la frase
+   corresponde a cada palabra dicha, aunque te saltes o añadas alguna.
+3. **Crédito por palabra.** Solo cuenta entera si es exacta; una palabra parecida (mal
+   pronunciada) recibe un 25 % y una distinta, nada.
+4. **Similitud por caracteres** con una curva que solo suma cuando de verdad se parece.
+5. **Penalización** de un 10 % por cada palabra de más (hasta un 30 %).
+
+`puntuación = 80 % palabras + 20 % caracteres − palabras de más`
+
+El reconocedor devuelve hasta **5 interpretaciones** de lo que dijiste; se puntúan todas y se
+queda la mejor. En el móvil, además, se limpian los fragmentos repetidos que a veces devuelve
+el reconocimiento continuo.
+
+---
+
+## 🩺 Problemas frecuentes
+
+<details>
+<summary><b>Dice «Sin reconocimiento de voz»</b></summary>
+
+Tu navegador no tiene la Web Speech API. Abre la app en **Chrome** o **Edge**.
+</details>
+
+<details>
+<summary><b>«El navegador bloqueó el micrófono»</b></summary>
+
+Pulsa el icono del candado en la barra de direcciones → **Micrófono → Permitir** y recarga la
+página.
+</details>
+
+<details>
+<summary><b>«No escuché nada»</b></summary>
+
+Comprueba que el micrófono correcto está seleccionado en el sistema, acércate y habla después de
+ver «Escuchando…».
+</details>
+
+<details>
+<summary><b>«Sin conexión»</b></summary>
+
+El reconocimiento de voz de Chrome y Edge se procesa en la nube: necesitas internet.
+</details>
+
+<details>
+<summary><b>No suena la frase</b></summary>
+
+El navegador no deja reproducir audio hasta que tocas algo en la página. Pulsa **Escuchar** una
+vez y a partir de ahí se leerá sola.
+</details>
+
+---
+
+## 🛠️ Desarrollo
+
+Requiere **Node.js 22.18 o superior**.
 
 ```bash
+git clone https://github.com/EnzoCodeDev/speak-english-enzo.git
+cd speak-english-enzo
 npm install
 npm run dev        # http://localhost:8082
 ```
 
-Úsala en **Chrome o Edge**: Firefox y Safari no tienen la Web Speech API de reconocimiento.
-El micrófono solo funciona en `localhost` o por `https`.
-
 | Script | Qué hace |
 |---|---|
-| `npm run dev` | Servidor de desarrollo en el puerto 8082 |
+| `npm run dev` | Servidor de desarrollo en el puerto **8082** |
 | `npm run build` | Export estático en `out/` |
 | `npm run start` | Sirve `out/` en el puerto 8082 |
 | `npm run lint` | ESLint |
-| `npm run typecheck` | TypeScript sin emitir |
-| `npm run validate` | Comprueba las frases (duplicados, vocabulario, diccionario) |
+| `npm run typecheck` | Comprobación de tipos |
+| `npm run validate` | Valida las frases: duplicados, variedad, vocabulario y diccionario |
 
-### Por qué el puerto es fijo
+> [!WARNING]
+> El puerto es fijo a propósito: el progreso va por origen, así que `localhost:8083` sería un
+> progreso nuevo y vacío.
 
-El progreso vive en `localStorage`, y ese almacén va **por origen**: `localhost:8082` y
-`localhost:8083` son dos progresos distintos. Para llevarte el progreso a otro sitio usa
-**Ajustes → Exportar** y luego **Importar** allí.
+### Añadir o cambiar frases
 
-La clave sigue siendo `speakenzo.v2`, la misma que la versión anterior, así que el progreso
-guardado en el mismo origen se conserva con la nueva interfaz.
+1. Edita `src/data/phrases.ts` (formato `[inglés, español, categoría]`). Cada 50 frases forman
+   una tanda.
+2. Usa solo palabras de `src/data/palabras-conversacion.ts` y asegúrate de que todas están en
+   `src/data/dictionary.ts` (`"palabra": ["significado", "PRO-nun-cia-ción"]`).
+3. Ejecuta `npm run validate` hasta ver `*** TODO CORRECTO ***`.
 
-## Cómo funciona la práctica
+> [!CAUTION]
+> El progreso se guarda **por la posición** de cada frase. No reordenes ni reescribas frases
+> existentes: añade las nuevas al final. Si hay que reescribirlas, sube `PHRASES_VERSION` en
+> `src/lib/state.ts` para que el progreso antiguo se descarte limpiamente.
 
-1. Aparece una frase en inglés con su traducción (se lee sola si tienes activada la lectura automática).
-2. **Escuchar** (`L`) la reproduce con voz nativa; **Lento** la repite despacio.
-3. Pulsa el micrófono (`Espacio`) y repítela.
-4. La app puntúa de 0 a 100 % y colorea cada palabra: verde bien, amarillo regular, rojo mal.
-5. **Siguiente** se desbloquea al superar el umbral (80 % por defecto) **dos veces seguidas**.
-   Si fallas, el contador vuelve a cero.
-6. Una frase dominada no vuelve a salir hasta completar el ciclo. Terminado el ciclo, empieza
-   la ronda siguiente con todo barajado.
+---
 
-### Qué practicar
+## 🗂️ Estructura del proyecto
 
-Arriba, en el selector, eliges una de las tres **tandas** de 50 frases (por defecto la **Tanda 3**).
-Cada tanda lleva **su propio ciclo de rondas**: terminar una no reinicia las demás.
-
-### Diccionario
-
-Toca cualquier palabra (de la frase o del resultado coloreado) para ver su significado, cómo
-se pronuncia escrito para hispanohablantes (`avatar` → `Á-va-tar`) y oírla.
-
-### Atajos
-
-| Tecla | Acción |
-|---|---|
-| `Espacio` | Empezar / parar el micrófono |
-| `L` | Escuchar la frase |
-| `Enter` | Siguiente (si está desbloqueada) |
-| `Esc` | Cerrar el recuadro de la palabra o el panel |
-
-## Cómo puntúa
-
-El texto reconocido y la frase objetivo se normalizan (contracciones, puntuación, números)
-y se comparan con alineación palabra a palabra más distancia de edición por caracteres. Una
-palabra solo cuenta entera si es exacta, las parecidas reciben crédito mínimo y hablar de más
-penaliza. Se evalúan las 5 alternativas del reconocedor y se queda la mejor.
-
-## Por qué 150 frases
-
-Son las que más se repiten al hablar en VRChat, sin saludos ni despedidas. Todas están escritas
-con solo **200 palabras** (`src/data/palabras-conversacion.ts`). `npm run validate` falla si
-alguna frase usa una palabra fuera de la lista o si falta en el diccionario.
-
-## Estructura
-
-```
-src/
-  app/                 layout, página, estilos globales e icono
-  components/          SpeakApp (pantalla principal), paneles, popover, UI
-  data/
-    phrases.ts         las 150 frases [inglés, español, categoría] en tandas de 50
-    dictionary.ts      significado y pronunciación de cada palabra
-    palabras-conversacion.ts  las 200 palabras permitidas
-  lib/
-    scoring.ts         normalización, alineación y puntuación
-    state.ts           progreso, migraciones y cola sin repeticiones
-    speech.ts          Web Speech API (reconocimiento y síntesis)
-scripts/validar-frases.mts
+```text
+speak-english-enzo/
+├── src/
+│   ├── app/                    # layout, página, estilos globales (tema) e icono
+│   ├── components/
+│   │   ├── SpeakApp.tsx        # pantalla principal: frase, consola, micro y atajos
+│   │   ├── Phrase.tsx          # frase con palabras tocables y resultado coloreado
+│   │   ├── WordPopover.tsx     # recuadro del diccionario
+│   │   ├── Panels.tsx          # paneles de Ajustes y Tu progreso
+│   │   ├── ClientApp.tsx       # carga la app solo en el navegador
+│   │   └── ui.tsx              # botones, panel lateral, interruptores, teclas
+│   ├── data/
+│   │   ├── phrases.ts          # las 150 frases en tandas de 50
+│   │   ├── dictionary.ts       # significado y pronunciación de cada palabra
+│   │   └── palabras-conversacion.ts  # las 200 palabras permitidas
+│   └── lib/
+│       ├── scoring.ts          # normalización, alineación y puntuación
+│       ├── state.ts            # progreso, migraciones y cola sin repeticiones
+│       ├── store.ts            # puente entre el estado y React
+│       └── speech.ts           # reconocimiento y síntesis de voz
+├── scripts/
+│   ├── validar-frases.mts      # validador de las frases
+│   └── deploy.sh               # despliegue al VPS
+├── deploy/
+│   ├── deploy.conf             # configuración del despliegue (servidor, dominio, rutas)
+│   ├── site.caddy              # configuración de Caddy del sitio
+│   └── smoke.txt               # URLs que deben responder tras desplegar
+├── docs/
+│   ├── screenshots/            # capturas de este README
+│   └── banner.html             # fuente de la imagen de portada
+├── Dockerfile                  # alternativa: build + Caddy en contenedor
+└── Caddyfile.static            # Caddy del contenedor
 ```
 
-> El orden de `phrases.ts` importa: el progreso guarda cada frase por su posición.
+---
 
-## Despliegue
+## 🚀 Despliegue
 
-Publicada en **https://speak-english-enzo.enzocode.dev** (VPS con Caddy y HTTPS automático).
+Publicada en **https://speak-english-enzo.enzocode.dev**: un VPS Ubuntu con **Caddy**, que sirve
+el export estático y gestiona solo el certificado HTTPS de Let's Encrypt.
 
 ```bash
-./scripts/deploy.sh            # compila, sube una versión nueva y la activa
-./scripts/deploy.sh rollback   # vuelve a la versión anterior
+./scripts/deploy.sh            # valida, compila, sube una versión nueva y la activa
+./scripts/deploy.sh status     # versión activa, versiones guardadas y estado de Caddy
+./scripts/deploy.sh rollback   # vuelve a la versión anterior al instante
+./scripts/deploy.sh setup      # prepara un servidor desde cero (instala Caddy y el sitio)
 ```
 
-Cada despliegue queda en `/var/www/speak-english-enzo/releases/<fecha>-<commit>` y el enlace
-`current` apunta a la activa; se guardan las 5 últimas. La configuración de Caddy está en
-`deploy/site.caddy` (en el servidor: `/etc/caddy/sites/speak-english-enzo.caddy`).
+Toda la configuración está en [`deploy/deploy.conf`](deploy/deploy.conf):
 
-También hay un `Dockerfile` (build + Caddy sin root) por si se prefiere desplegar en contenedor.
+| Clave | Valor |
+|---|---|
+| `HOST` | `mi-servidor` (alias SSH del VPS) |
+| `DOMAIN` | `speak-english-enzo.enzocode.dev` |
+| `SITE` | `speak-english-enzo` |
+| `BASE` | `/var/www/speak-english-enzo` |
+| `KEEP` | `5` versiones guardadas |
+
+<details>
+<summary><b>Cómo queda el servidor</b></summary>
+
+```text
+/etc/caddy/Caddyfile                       # bloque global + import /etc/caddy/sites/*.caddy
+/etc/caddy/sites/speak-english-enzo.caddy  # copia de deploy/site.caddy
+/var/www/speak-english-enzo/
+├── releases/
+│   ├── 20261029-175038-ae6072c/           # cada despliegue: <fecha>-<commit>
+│   └── 20261029-175224-4adb128/
+└── current -> releases/20261029-175224-4adb128   # la que sirve Caddy
+/var/log/caddy/speak-english-enzo.log      # log de accesos (rotado)
+```
+
+Cada sitio del VPS tiene su propio archivo en `/etc/caddy/sites/`, así que se pueden alojar
+más proyectos sin tocar este.
+</details>
+
+También hay un `Dockerfile` (compila con Node y sirve con Caddy sin root) por si se prefiere
+desplegar en contenedor: `docker compose up -d --build`.
+
+---
+
+<div align="center">
+<sub>Hecho por <a href="https://github.com/EnzoCodeDev">EnzoCodeDev</a> para hablar inglés en VRChat sin trabarse 🥽</sub>
+</div>
