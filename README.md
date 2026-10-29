@@ -47,9 +47,8 @@ guardado en el mismo origen se conserva con la nueva interfaz.
 
 ### Qué practicar
 
-Arriba están las tres **tandas**; en Ajustes también puedes elegir una **categoría**
-(preguntas, respuestas, exclamaciones, sentimientos, comprensión, cortesía, micro y voz, planes).
-Solo hay una selección activa y cada una lleva **su propio ciclo de rondas**.
+Arriba, en el selector, eliges una de las tres **tandas** de 50 frases (por defecto la **Tanda 3**).
+Cada tanda lleva **su propio ciclo de rondas**: terminar una no reinicia las demás.
 
 ### Diccionario
 
@@ -92,7 +91,7 @@ src/
     scoring.ts         normalización, alineación y puntuación
     state.ts           progreso, migraciones y cola sin repeticiones
     speech.ts          Web Speech API (reconocimiento y síntesis)
-scripts/validar-frases.ts
+scripts/validar-frases.mts
 ```
 
 > El orden de `phrases.ts` importa: el progreso guarda cada frase por su posición.

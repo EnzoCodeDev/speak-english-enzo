@@ -8,7 +8,7 @@
     "start": "npx --yes serve out -l 8082",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
-    "validate": "node scripts/validar-frases.ts"
+    "validate": "node scripts/validar-frases.mts"
   },
   "dependencies": {
     "clsx": "^2.1.1",

@@ -5,7 +5,7 @@ import clsx from "clsx";
 import { Download, Trash2, Upload } from "lucide-react";
 import { PHRASES } from "@/data/phrases";
 import {
-  CAT_VALUES, SET_VALUES, catLabel, currentRound, optionLabel, optionSize, progressOf, roundsDone,
+  SET_VALUES, currentRound, optionLabel, optionSize, progressOf, roundsDone,
   type AppState, type Lang, type Settings,
 } from "@/lib/state";
 import { Toggle } from "./ui";
@@ -92,16 +92,12 @@ export function SettingsPanel({
 
   return (
     <div>
-      <Section title="Qué practicar">
+      <Section title="Tanda">
         <div className="grid gap-2">
           {SET_VALUES.map(option)}
         </div>
-        <p className="mt-4 mb-2 text-xs text-ink-400">O por categoría:</p>
-        <div className="grid grid-cols-2 gap-2">
-          {CAT_VALUES.map(option)}
-        </div>
         <p className="mt-3 text-xs leading-relaxed text-ink-400">
-          Cada opción lleva su propio ciclo: el número en ámbar son las rondas completas.
+          Cada tanda lleva su propio ciclo: el número en ámbar son las rondas completas.
         </p>
       </Section>
 
@@ -172,8 +168,7 @@ export function StatsPanel({ state }: { state: AppState }) {
     ["Mejor racha", state.stats.bestStreak],
   ];
 
-  const cats = CAT_VALUES.map((v) => ({ name: v.slice(4), ...progressOf(state, v) }))
-    .sort((a, b) => b.done / b.total - a.done / a.total);
+  const sets = SET_VALUES.map((v) => ({ name: optionLabel(v), ...progressOf(state, v) }));
 
   const hard = Object.entries(state.records)
     .filter(([id, r]) => r.fails > 0 && PHRASES[+id])
@@ -191,11 +186,11 @@ export function StatsPanel({ state }: { state: AppState }) {
         ))}
       </dl>
 
-      <Section title="Por categoría">
+      <Section title="Por tanda">
         <ul className="space-y-3">
-          {cats.map((c) => (
-            <li key={c.name} className="grid grid-cols-[7.5rem_1fr_3rem] items-center gap-3 text-sm">
-              <span className="truncate text-ink-300">{catLabel(c.name)}</span>
+          {sets.map((c) => (
+            <li key={c.name} className="grid grid-cols-[5rem_1fr_3rem] items-center gap-3 text-sm">
+              <span className="truncate text-ink-300">{c.name}</span>
               <span className="h-1.5 overflow-hidden rounded-full bg-ink-800">
                 <span className="block h-full rounded-full bg-signal transition-[width] duration-700"
                   style={{ width: `${c.total ? (c.done / c.total) * 100 : 0}%` }} />

@@ -18,11 +18,13 @@ export type Settings = {
   threshold: number;
   hitsNeeded: number;
   lang: Lang;
-  /** 'set:<id>' o 'cat:<nombre>' */
+  /** Tanda activa: 'set:<id>'. (Se llama así por compatibilidad con el progreso guardado.) */
   category: string;
   autoplay: boolean;
   autoplayOnByDefault: boolean;
   hideEs: boolean;
+  /** Marcador de la migración que deja la tanda 3 activa una sola vez. */
+  startedOnSet3?: boolean;
 };
 
 export type Mastered = { score: number; attempts: number; successes: number; date: string; round: number };
@@ -42,36 +44,21 @@ export type AppState = {
 
 export const SET_BY_ID: Record<string, PhraseSet> = Object.fromEntries(SETS.map((s) => [s.id, s]));
 export const SET_VALUES = SETS.map((s) => "set:" + s.id);
-export const CATEGORIES = [...new Set(PHRASES.map((p) => p[2]))].sort();
-export const CAT_VALUES = CATEGORIES.map((c) => "cat:" + c);
-
-export const CATEGORY_LABELS: Record<string, string> = {
-  preguntas: "Preguntas",
-  respuestas: "Respuestas",
-  exclamaciones: "Exclamaciones",
-  sentimientos: "Sentimientos",
-  comprension: "Comprensión",
-  cortesia: "Cortesía",
-  tecnologia: "Micro y voz",
-  planes: "Planes",
-  "dia a dia": "Día a día",
-};
-
-export const catLabel = (c: string) => CATEGORY_LABELS[c] ?? c.charAt(0).toUpperCase() + c.slice(1);
+/** Tanda por defecto. */
+export const DEFAULT_SET = "set:set3";
 
 export function optionLabel(value: string): string {
-  const [kind, name] = value.split(":");
-  if (kind === "set") return SET_BY_ID[name]?.label ?? value;
-  return catLabel(name);
+  return SET_BY_ID[value.split(":")[1]]?.label ?? value;
 }
 
 export function optionSize(value: string): number {
-  const [kind, name] = value.split(":");
-  if (kind === "set") {
-    const s = SET_BY_ID[name];
-    return s ? s.end - s.start : 0;
-  }
-  return PHRASES.filter((p) => p[2] === name).length;
+  const s = SET_BY_ID[value.split(":")[1]];
+  return s ? s.end - s.start : 0;
+}
+
+/** Tanda a la que pertenece una frase. */
+export function setOfPhrase(i: number): PhraseSet | undefined {
+  return SETS.find((s) => i >= s.start && i < s.end);
 }
 
 export function roundsDone(state: AppState, value: string): number {
@@ -89,7 +76,7 @@ export const defaultState = (): AppState => ({
   streak: 0,
   settings: {
     threshold: 80, hitsNeeded: 2, lang: "en-US",
-    category: "set:set1", autoplay: true, autoplayOnByDefault: true, hideEs: false,
+    category: DEFAULT_SET, autoplay: true, autoplayOnByDefault: true, hideEs: false, startedOnSet3: true,
   },
 });
 
@@ -110,9 +97,14 @@ export function loadState(): AppState {
     st.rounds = Object.fromEntries(Object.entries(st.rounds).map(([k, v]) => [asValue(k), v]));
     st.settings.category = asValue(st.settings.category);
     if (st.settings.category === "all") st.settings.category = "set:set1";
+    // Ya no se practica por categorías: solo por tandas.
     const [kind, name] = st.settings.category.split(":");
-    if ((kind === "set" && !SET_BY_ID[name]) || (kind === "cat" && !PHRASES.some((p) => p[2] === name)))
-      st.settings.category = "set:set1";
+    if (kind !== "set" || !SET_BY_ID[name]) st.settings.category = DEFAULT_SET;
+    // Una sola vez: pasar a la tanda 3 (el marcador se mira en `saved`).
+    if (!(saved.settings || {}).startedOnSet3) {
+      st.settings.category = DEFAULT_SET;
+      st.settings.startedOnSet3 = true;
+    }
     if (st.rounds.all && st.rounds["set:set1"] === undefined) st.rounds["set:set1"] = st.rounds.all;
     // La lectura automática pasó a venir activada: se enciende una sola vez.
     // El marcador se mira en `saved`, no en `st.settings` (que trae los valores por defecto).
@@ -225,7 +217,7 @@ export function progressOf(state: AppState, value = state.settings.category) {
 export function startSession(state: AppState) {
   state.stats.sessions++;
   if (!PHRASES.some((_, i) => inCategory(state, i))) {
-    state.settings.category = "set:set1";
+    state.settings.category = DEFAULT_SET;
     state.queue = [];
   }
   state.queue = state.queue.filter((i) => inCategory(state, i));
@@ -283,6 +275,6 @@ export function fromImported(data: unknown): AppState {
   const d = data as Partial<AppState>;
   const base = defaultState();
   const st: AppState = { ...base, ...d, settings: { ...base.settings, ...(d.settings || {}) } } as AppState;
-  if (st.settings.category === "all") st.settings.category = "set:set1";
+  if (!st.settings.category.startsWith("set:")) st.settings.category = DEFAULT_SET;
   return st;
 }

@@ -12,8 +12,8 @@ import {
   RECOGNITION_ERRORS, getRecognizerCtor, isMobile, speak, stopSpeaking, type Recognizer,
 } from "@/lib/speech";
 import {
-  CAT_VALUES, SET_VALUES, STORAGE_KEY, advance, catLabel, defaultState, fromImported, optionLabel, progressOf,
-  recordAttempt, roundsDone, setCategory, updateSettings, type Settings,
+  SET_VALUES, STORAGE_KEY, advance, defaultState, fromImported, optionLabel, progressOf,
+  recordAttempt, roundsDone, setCategory, setOfPhrase, updateSettings, type Settings,
 } from "@/lib/state";
 import { Store } from "@/lib/store";
 import { PhraseText, WordFeedback, type WordPick } from "./Phrase";
@@ -353,18 +353,13 @@ export default function SpeakApp() {
       {/* ---------- qué practicar + progreso ---------- */}
       <nav className="mt-3 flex shrink-0 items-center justify-between gap-3 md:mt-8" aria-label="Qué practicar">
         <label className="relative min-w-0 flex-1 sm:max-w-xs">
-          <span className="sr-only">Qué practicar</span>
+          <span className="sr-only">Tanda</span>
           <select
             value={active}
             onChange={(e) => chooseCategory(e.target.value)}
             className="w-full appearance-none truncate rounded-xl border border-ink-800 bg-ink-900 py-2.5 pr-10 pl-3.5 text-sm font-medium text-ink-100 transition hover:border-ink-600 focus-visible:border-signal"
           >
-            <optgroup label="Tandas">
-              {SET_VALUES.map((v) => <option key={v} value={v}>{optionText(v)}</option>)}
-            </optgroup>
-            <optgroup label="Categorías">
-              {CAT_VALUES.map((v) => <option key={v} value={v}>{optionText(v)}</option>)}
-            </optgroup>
+            {SET_VALUES.map((v) => <option key={v} value={v}>{optionText(v)}</option>)}
           </select>
           <ChevronDown className="pointer-events-none absolute top-1/2 right-3 size-4 -translate-y-1/2 text-ink-400" />
         </label>
@@ -392,7 +387,7 @@ export default function SpeakApp() {
           <div className="flex items-center justify-between text-xs font-medium text-ink-400">
             <span className="flex items-center gap-2">
               <span className="size-1.5 rounded-full bg-signal" />
-              {catLabel(phrase[2])}
+              {setOfPhrase(phraseIndex)?.label} · frase {phraseIndex - (setOfPhrase(phraseIndex)?.start ?? 0) + 1}
             </span>
             <span className="flex items-center gap-2" aria-label={`${hits} de ${hitsNeeded} aciertos seguidos`}>
               Aciertos
