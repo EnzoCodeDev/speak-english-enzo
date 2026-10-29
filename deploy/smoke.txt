@@ -1,4 +1,4 @@
-# <url con {$DOMAIN}> <código HTTP esperado>
-https://speak-enzo.{$DOMAIN}/health 200
-https://speak-enzo.{$DOMAIN}/ 200
-https://speak-enzo.{$DOMAIN}/icon.svg 200
+# <url> <código HTTP esperado>
+https://speak-english-enzo.enzocode.dev/health 200
+https://speak-english-enzo.enzocode.dev/ 200
+https://speak-english-enzo.enzocode.dev/icon.svg 200

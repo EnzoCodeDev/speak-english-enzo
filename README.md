@@ -98,10 +98,15 @@ scripts/validar-frases.mts
 
 ## Despliegue
 
-`Dockerfile` compila el export estático con Node y lo sirve con un Caddy mínimo sin root
-(`Caddyfile.static`). `compose.yaml` y `deploy/` son la configuración del VPS
-(**https://speak-enzo.enzocode.dev**).
+Publicada en **https://speak-english-enzo.enzocode.dev** (VPS con Caddy y HTTPS automático).
 
 ```bash
-docker compose up -d --build
+./scripts/deploy.sh            # compila, sube una versión nueva y la activa
+./scripts/deploy.sh rollback   # vuelve a la versión anterior
 ```
+
+Cada despliegue queda en `/var/www/speak-english-enzo/releases/<fecha>-<commit>` y el enlace
+`current` apunta a la activa; se guardan las 5 últimas. La configuración de Caddy está en
+`deploy/site.caddy` (en el servidor: `/etc/caddy/sites/speak-english-enzo.caddy`).
+
+También hay un `Dockerfile` (build + Caddy sin root) por si se prefiere desplegar en contenedor.

@@ -1,5 +1,36 @@
-# https://speak-enzo.enzocode.dev (ver .claude/skills/deploy/references/domains.md)
-speak-enzo.{$DOMAIN} {
-	import common
-	reverse_proxy speak-enzo-web:8080
+# Configuración real en el VPS: /etc/caddy/sites/speak-english-enzo.caddy
+# (el Caddyfile principal hace `import /etc/caddy/sites/*.caddy`).
+# Caddy gestiona solo el certificado HTTPS de Let's Encrypt.
+speak-english-enzo.enzocode.dev {
+	root * /var/www/speak-english-enzo/current
+	encode zstd gzip
+
+	respond /health 200
+
+	header {
+		Permissions-Policy "microphone=(self)"
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		Strict-Transport-Security "max-age=31536000"
+		-Server
+	}
+	@static path /_next/static/*
+	header @static Cache-Control "public, max-age=31536000, immutable"
+	@html not path /_next/static/*
+	header @html Cache-Control "no-cache"
+
+	try_files {path} {path}.html {path}/index.html
+	file_server
+
+	handle_errors {
+		rewrite * /404.html
+		file_server
+	}
+
+	log {
+		output file /var/log/caddy/speak-english-enzo.log {
+			roll_size 10MiB
+			roll_keep 5
+		}
+	}
 }
