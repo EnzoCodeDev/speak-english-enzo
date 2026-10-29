@@ -1,0 +1,109 @@
+@import "tailwindcss";
+
+/* ───────────────────────── Speak English Enzo ─────────────────────────
+   Mundo visual: un estudio de grabación de noche. Tinta azul-violeta muy
+   oscura, el ámbar del piloto "ON AIR" para la acción principal y verdes,
+   amarillos y corales solo para el resultado de la pronunciación. */
+
+@theme {
+  --color-ink-950: oklch(0.14 0.02 278);
+  --color-ink-900: oklch(0.175 0.024 278);
+  --color-ink-850: oklch(0.205 0.026 278);
+  --color-ink-800: oklch(0.24 0.028 278);
+  --color-ink-700: oklch(0.31 0.03 278);
+  --color-ink-600: oklch(0.42 0.03 278);
+  --color-ink-400: oklch(0.68 0.025 278);
+  --color-ink-300: oklch(0.79 0.02 278);
+  --color-ink-100: oklch(0.95 0.008 278);
+
+  --color-signal: oklch(0.8 0.16 62);
+  --color-signal-strong: oklch(0.72 0.18 50);
+  --color-signal-soft: oklch(0.8 0.16 62 / 0.14);
+
+  --color-good: oklch(0.82 0.17 152);
+  --color-good-soft: oklch(0.82 0.17 152 / 0.13);
+  --color-meh: oklch(0.86 0.15 92);
+  --color-meh-soft: oklch(0.86 0.15 92 / 0.13);
+  --color-bad: oklch(0.72 0.19 22);
+  --color-bad-soft: oklch(0.72 0.19 22 / 0.14);
+
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+  --font-display: var(--font-bricolage), var(--font-geist-sans), sans-serif;
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+
+  --animate-rise: rise 0.6s var(--ease-out-expo) both;
+  --animate-pop: pop 0.35s var(--ease-out-expo) both;
+  --animate-bar: bar 0.9s ease-in-out infinite;
+  --animate-halo: halo 1.6s var(--ease-out-expo) infinite;
+  --animate-slide-in: slide-in 0.45s var(--ease-out-expo) both;
+
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(12px); filter: blur(8px); }
+    to { opacity: 1; transform: none; filter: blur(0); }
+  }
+  @keyframes pop {
+    from { opacity: 0; transform: translateY(4px) scale(0.97); }
+    to { opacity: 1; transform: none; }
+  }
+  @keyframes bar {
+    0%, 100% { transform: scaleY(0.2); }
+    50% { transform: scaleY(1); }
+  }
+  @keyframes halo {
+    from { transform: scale(1); opacity: 0.5; }
+    to { transform: scale(1.7); opacity: 0; }
+  }
+  @keyframes slide-in {
+    from { transform: translateX(100%); }
+    to { transform: none; }
+  }
+}
+
+@layer base {
+  html {
+    color-scheme: dark;
+    background: var(--color-ink-950);
+    -webkit-tap-highlight-color: transparent;
+  }
+  body {
+    min-height: 100dvh;
+    color: var(--color-ink-100);
+    font-family: var(--font-sans);
+    background:
+      radial-gradient(70rem 40rem at 50% -18rem, oklch(0.32 0.08 285 / 0.55), transparent 70%),
+      radial-gradient(40rem 30rem at 100% 100%, oklch(0.4 0.1 55 / 0.1), transparent 70%),
+      var(--color-ink-950);
+    background-attachment: fixed;
+  }
+  ::selection {
+    background: var(--color-signal);
+    color: var(--color-ink-950);
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-signal);
+    outline-offset: 3px;
+  }
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-ink-700) transparent;
+  }
+  input[type="range"],
+  input[type="checkbox"] {
+    accent-color: var(--color-signal);
+  }
+  button:not(:disabled) {
+    cursor: pointer;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

@@ -1,0 +1,5 @@
+# https://speak-enzo.enzocode.dev (ver .claude/skills/deploy/references/domains.md)
+speak-enzo.{$DOMAIN} {
+	import common
+	reverse_proxy speak-enzo-web:8080
+}
