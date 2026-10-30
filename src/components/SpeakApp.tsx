@@ -18,6 +18,7 @@ import {
 import { Store } from "@/lib/store";
 import { PhraseText, WordFeedback, type WordPick } from "./Phrase";
 import { SettingsPanel, StatsPanel } from "./Panels";
+import { ThemeToggle } from "./Theme";
 import { IconButton, Kbd, Sheet } from "./ui";
 import { WordPopover, type PopoverState } from "./WordPopover";
 
@@ -332,7 +333,7 @@ export default function SpeakApp() {
       {/* ---------- cabecera ---------- */}
       <header className="flex shrink-0 items-center justify-between gap-3 pt-3 md:pt-7">
         <div className="flex min-w-0 items-center gap-2.5 md:gap-3">
-          <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-signal text-ink-950 shadow-[0_10px_30px_-10px_var(--color-signal)] md:size-11 md:rounded-2xl">
+          <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-signal text-on-accent shadow-[0_10px_30px_-10px_var(--color-signal)] md:size-11 md:rounded-2xl">
             <Mic className="size-[18px] md:size-5" strokeWidth={2.4} />
           </span>
           <div className="min-w-0">
@@ -341,6 +342,7 @@ export default function SpeakApp() {
           </div>
         </div>
         <div className="flex shrink-0 gap-2">
+          <ThemeToggle />
           <IconButton label="Estadísticas" onClick={() => setPanel("stats")}>
             <ChartColumn className="size-[18px]" />
           </IconButton>
@@ -366,7 +368,7 @@ export default function SpeakApp() {
         <div className="flex shrink-0 items-center gap-3 text-sm text-ink-400 md:gap-4">
           <span className="font-mono tabular-nums">Ronda {progress.round}</span>
           <span
-            className={clsx("flex items-center gap-1 font-mono tabular-nums", S.streak > 0 ? "text-signal" : "text-ink-400")}
+            className={clsx("flex items-center gap-1 font-mono tabular-nums", S.streak > 0 ? "text-signal-fg" : "text-ink-400")}
             title="Aciertos seguidos"
           >
             <Flame className="size-4" /> {S.streak}
@@ -382,7 +384,7 @@ export default function SpeakApp() {
       </div>
 
       {/* ---------- escenario ---------- */}
-      <main className="relative mt-3 flex min-h-0 flex-1 flex-col rounded-3xl border border-ink-800 bg-ink-900/80 shadow-[0_40px_100px_-40px_rgb(0_0_0/0.8)] md:mt-6 md:rounded-[28px]">
+      <main className="relative mt-3 flex min-h-0 flex-1 flex-col rounded-3xl border border-ink-800 bg-ink-900/80 shadow-[0_40px_100px_-40px_var(--color-shadow)] md:mt-6 md:rounded-[28px]">
         <div className="flex min-h-0 flex-1 flex-col overflow-y-auto px-5 pt-4 pb-4 md:px-12 md:pt-10 md:pb-8">
           <div className="flex items-center justify-between text-xs font-medium text-ink-400">
             <span className="flex items-center gap-2">
@@ -433,9 +435,9 @@ export default function SpeakApp() {
                 <span className={clsx(
                   "font-mono text-3xl font-semibold tracking-tight tabular-nums transition-colors md:text-5xl",
                   scoreTone === "none" && "text-ink-600",
-                  scoreTone === "good" && "text-good",
-                  scoreTone === "meh" && "text-meh",
-                  scoreTone === "bad" && "text-bad",
+                  scoreTone === "good" && "text-good-fg",
+                  scoreTone === "meh" && "text-meh-fg",
+                  scoreTone === "bad" && "text-bad-fg",
                 )}>
                   {score ?? "––"}
                 </span>
@@ -477,8 +479,8 @@ export default function SpeakApp() {
                     className={clsx(
                       "relative grid size-[72px] place-items-center rounded-full transition duration-300 ease-[var(--ease-out-expo)] active:scale-95 md:size-24",
                       recording
-                        ? "bg-bad text-ink-950 shadow-[0_18px_50px_-12px_var(--color-bad)]"
-                        : "bg-signal text-ink-950 shadow-[0_18px_50px_-14px_var(--color-signal)] hover:scale-105",
+                        ? "bg-bad text-on-accent shadow-[0_18px_50px_-12px_var(--color-bad)]"
+                        : "bg-signal text-on-accent shadow-[0_18px_50px_-14px_var(--color-signal)] hover:scale-105",
                     )}
                   >
                     {recording && (
@@ -497,7 +499,7 @@ export default function SpeakApp() {
                 </>
               ) : (
                 <div className="max-w-[12rem] rounded-2xl border border-meh/30 bg-meh-soft p-3 text-xs text-ink-100 md:max-w-xs md:p-4 md:text-sm">
-                  <p className="flex items-center gap-2 font-semibold text-meh">
+                  <p className="flex items-center gap-2 font-semibold text-meh-fg">
                     <TriangleAlert className="size-4 shrink-0" /> Sin reconocimiento de voz
                   </p>
                   <p className="mt-1.5 text-ink-300">
@@ -529,9 +531,9 @@ export default function SpeakApp() {
               <p className={clsx(
                 "flex items-center gap-2 text-sm font-medium",
                 status.tone === "idle" && "text-ink-300",
-                status.tone === "rec" && "text-bad",
-                status.tone === "good" && "text-good",
-                status.tone === "bad" && "text-bad",
+                status.tone === "rec" && "text-bad-fg",
+                status.tone === "good" && "text-good-fg",
+                status.tone === "bad" && "text-bad-fg",
               )}>
                 {status.tone === "rec" && (
                   <span className="flex h-4 shrink-0 items-center gap-0.5" aria-hidden="true">
@@ -562,7 +564,7 @@ export default function SpeakApp() {
                 className={clsx(
                   "inline-flex items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold transition duration-300",
                   unlocked
-                    ? "bg-good text-ink-950 shadow-[0_12px_30px_-12px_var(--color-good)] hover:brightness-110"
+                    ? "bg-good text-on-accent shadow-[0_12px_30px_-12px_var(--color-good)] hover:brightness-110"
                     : "cursor-not-allowed border border-ink-800 bg-ink-850 text-ink-400",
                 )}
               >
@@ -593,7 +595,7 @@ export default function SpeakApp() {
       {toast && (
         <div className="pointer-events-none fixed inset-x-0 bottom-6 z-[60] flex justify-center px-4">
           <div key={toast.id} role="status"
-            className="animate-pop rounded-full bg-ink-100 px-5 py-2.5 text-sm font-medium text-ink-950 shadow-[0_16px_40px_-10px_rgb(0_0_0/0.7)]">
+            className="animate-pop rounded-full bg-ink-100 px-5 py-2.5 text-sm font-medium text-ink-950 shadow-[0_16px_40px_-10px_var(--color-shadow)]">
             {toast.msg}
           </div>
         </div>

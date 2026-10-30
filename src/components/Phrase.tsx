@@ -30,7 +30,7 @@ export function PhraseText({
               }}
               className={clsx(
                 "-mx-1 rounded-lg px-1 decoration-ink-600 decoration-dotted decoration-2 underline-offset-[0.18em] transition-colors duration-150 hover:bg-ink-800 hover:underline",
-                activeKey === key && "bg-signal-soft text-signal underline decoration-signal",
+                activeKey === key && "bg-signal-soft text-signal-fg underline decoration-signal",
               )}
             >
               {token}
@@ -64,9 +64,9 @@ export function WordFeedback({ words, onPick }: { words: WordResult[]; onPick: (
               }}
               className={clsx(
                 "rounded-lg px-2.5 py-1 font-mono text-sm font-medium transition hover:brightness-125 disabled:cursor-default",
-                tone === "good" && "bg-good-soft text-good",
-                tone === "meh" && "bg-meh-soft text-meh",
-                tone === "bad" && "bg-bad-soft text-bad underline decoration-wavy decoration-1 underline-offset-4",
+                tone === "good" && "bg-good-soft text-good-fg",
+                tone === "meh" && "bg-meh-soft text-meh-fg",
+                tone === "bad" && "bg-bad-soft text-bad-fg underline decoration-wavy decoration-1 underline-offset-4",
               )}
             >
               {w.word}

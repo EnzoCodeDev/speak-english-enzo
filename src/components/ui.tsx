@@ -62,7 +62,7 @@ export function Sheet({
         onClick={onClose}
         className="absolute inset-0 cursor-default bg-ink-950/70 animate-[pop_0.3s_ease-out_both]"
       />
-      <div className="relative flex h-full w-full max-w-md flex-col border-l border-ink-800 bg-ink-900 shadow-[-30px_0_80px_-20px_rgb(0_0_0/0.6)] animate-slide-in">
+      <div className="relative flex h-full w-full max-w-md flex-col border-l border-ink-800 bg-ink-900 shadow-[-30px_0_80px_-20px_var(--color-shadow)] animate-slide-in">
         <header className="flex items-center justify-between border-b border-ink-800 px-6 py-5">
           <h2 className="font-display text-xl font-bold tracking-tight">{title}</h2>
           <IconButton label="Cerrar panel" onClick={onClose}>

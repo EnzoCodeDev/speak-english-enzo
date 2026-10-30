@@ -8,6 +8,7 @@ import {
   SET_VALUES, currentRound, optionLabel, optionSize, progressOf, roundsDone,
   type AppState, type Lang, type Settings,
 } from "@/lib/state";
+import { ThemePicker } from "./Theme";
 import { Toggle } from "./ui";
 
 const LANGS: { value: Lang; label: string }[] = [
@@ -33,7 +34,7 @@ function Slider({
     <label className="block py-2">
       <span className="flex items-baseline justify-between text-sm">
         <span className="font-medium text-ink-100">{label}</span>
-        <span className="font-mono text-base text-signal tabular-nums">
+        <span className="font-mono text-base text-signal-fg tabular-nums">
           {value}
           {unit}
         </span>
@@ -84,7 +85,7 @@ export function SettingsPanel({
         </span>
         <span className="font-mono text-xs text-ink-400 tabular-nums">
           {p.done}/{p.total}
-          {r > 0 && <span className="ml-2 text-signal">{r}×</span>}
+          {r > 0 && <span className="ml-2 text-signal-fg">{r}×</span>}
         </span>
       </button>
     );
@@ -99,6 +100,10 @@ export function SettingsPanel({
         <p className="mt-3 text-xs leading-relaxed text-ink-400">
           Cada tanda lleva su propio ciclo: el número en ámbar son las rondas completas.
         </p>
+      </Section>
+
+      <Section title="Apariencia">
+        <ThemePicker />
       </Section>
 
       <Section title="Exigencia">
@@ -140,7 +145,7 @@ export function SettingsPanel({
           <input ref={fileRef} type="file" accept="application/json" hidden
             onChange={(e) => { const f = e.target.files?.[0]; if (f) onImport(f); e.target.value = ""; }} />
           <button type="button" onClick={onReset}
-            className="inline-flex items-center gap-2 rounded-xl border border-bad/40 px-3.5 py-2 text-sm text-bad transition hover:bg-bad-soft">
+            className="inline-flex items-center gap-2 rounded-xl border border-bad/40 px-3.5 py-2 text-sm text-bad-fg transition hover:bg-bad-soft">
             <Trash2 className="size-4" /> Borrar todo
           </button>
         </div>

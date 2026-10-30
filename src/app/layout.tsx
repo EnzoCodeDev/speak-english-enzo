@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Bricolage_Grotesque, Geist, Geist_Mono } from "next/font/google";
+import { THEME_SCRIPT } from "@/lib/theme";
 import "./globals.css";
 
 const geist = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
@@ -18,13 +19,24 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#0f0e1a",
-  colorScheme: "dark",
+  themeColor: [
+    { media: "(prefers-color-scheme: dark)", color: "#0f0e1a" },
+    { media: "(prefers-color-scheme: light)", color: "#f6f5fa" },
+  ],
+  colorScheme: "light dark",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="es" className={`${geist.variable} ${geistMono.variable} ${bricolage.variable} antialiased`}>
+    // data-theme lo pone el script de <head> antes de pintar: React no debe quejarse.
+    <html
+      lang="es"
+      suppressHydrationWarning
+      className={`${geist.variable} ${geistMono.variable} ${bricolage.variable} antialiased`}
+    >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
+      </head>
       <body>{children}</body>
     </html>
   );
