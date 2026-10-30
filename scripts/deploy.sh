@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Despliegue de Speak English Enzo en el VPS.
-# Toda la configuración está en deploy/deploy.conf.
+# La configuración está en deploy/deploy.conf, que es LOCAL (ignorado por git).
+# Créalo desde la plantilla: cp deploy/deploy.conf.example deploy/deploy.conf
 #
 #   ./scripts/deploy.sh            compila, sube una versión nueva y la activa
 #   ./scripts/deploy.sh rollback   vuelve a la versión anterior
@@ -18,6 +19,10 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 
 HOST_OVERRIDE="${HOST:-}"
+if [ ! -f deploy/deploy.conf ]; then
+  echo "Falta deploy/deploy.conf. Créalo con: cp deploy/deploy.conf.example deploy/deploy.conf" >&2
+  exit 1
+fi
 # shellcheck source=../deploy/deploy.conf
 . deploy/deploy.conf
 HOST="${HOST_OVERRIDE:-$HOST}"

@@ -317,7 +317,7 @@ speak-english-enzo/
 │   ├── validar-frases.mts      # validador de las frases
 │   └── deploy.sh               # despliegue al VPS
 ├── deploy/
-│   ├── deploy.conf             # configuración del despliegue (servidor, dominio, rutas)
+│   ├── deploy.conf.example     # plantilla de la configuración (la real es local)
 │   ├── site.caddy              # configuración de Caddy del sitio
 │   └── smoke.txt               # URLs que deben responder tras desplegar
 ├── docs/
@@ -331,7 +331,7 @@ speak-english-enzo/
 
 ## 🚀 Despliegue
 
-Publicada en **https://speak-english-enzo.enzocode.dev**: un VPS Ubuntu con **Caddy**, que sirve
+Publicada en **https://speak-english-enzo.enzocode.dev**: un servidor Linux con **Caddy**, que sirve
 el export estático y gestiona solo el certificado HTTPS de Let's Encrypt.
 
 ```bash
@@ -341,32 +341,29 @@ el export estático y gestiona solo el certificado HTTPS de Let's Encrypt.
 ./scripts/deploy.sh setup      # prepara un servidor desde cero (instala Caddy y el sitio)
 ```
 
-Toda la configuración está en [`deploy/deploy.conf`](deploy/deploy.conf):
+La configuración del servidor vive en `deploy/deploy.conf`, un archivo **local que no se sube
+al repo** (está en `.gitignore`). Para crearlo:
 
-| Clave | Valor |
-|---|---|
-| `HOST` | `mi-servidor` (alias SSH del VPS) |
-| `DOMAIN` | `speak-english-enzo.enzocode.dev` |
-| `SITE` | `speak-english-enzo` |
-| `BASE` | `/var/www/speak-english-enzo` |
-| `KEEP` | `5` versiones guardadas |
+```bash
+cp deploy/deploy.conf.example deploy/deploy.conf   # y rellena HOST (alias SSH) y DOMAIN
+```
+
+El acceso al servidor va por un alias de `~/.ssh/config` con autenticación por clave: el repo no
+contiene IPs, usuarios, claves ni contraseñas.
 
 <details>
 <summary><b>Cómo queda el servidor</b></summary>
 
 ```text
-/etc/caddy/Caddyfile                       # bloque global + import /etc/caddy/sites/*.caddy
-/etc/caddy/sites/speak-english-enzo.caddy  # copia de deploy/site.caddy
-/var/www/speak-english-enzo/
-├── releases/
-│   ├── 20261029-175038-ae6072c/           # cada despliegue: <fecha>-<commit>
-│   └── 20261029-175224-4adb128/
-└── current -> releases/20261029-175224-4adb128   # la que sirve Caddy
-/var/log/caddy/speak-english-enzo.log      # log de accesos (rotado)
+/etc/caddy/Caddyfile              # bloque global + import /etc/caddy/sites/*.caddy
+/etc/caddy/sites/<sitio>.caddy    # copia de deploy/site.caddy
+/var/www/<sitio>/
+├── releases/<fecha>-<commit>/    # cada despliegue (se guardan las 5 últimas)
+└── current -> releases/<...>     # la versión que sirve Caddy
 ```
 
-Cada sitio del VPS tiene su propio archivo en `/etc/caddy/sites/`, así que se pueden alojar
-más proyectos sin tocar este.
+Cada sitio tiene su propio archivo en `/etc/caddy/sites/`, así que el servidor puede alojar más
+proyectos sin que se pisen.
 </details>
 
 También hay un `Dockerfile` (compila con Node y sirve con Caddy sin root) por si se prefiere

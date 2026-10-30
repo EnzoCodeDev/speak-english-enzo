@@ -1,0 +1,22 @@
+# Plantilla de configuración del despliegue.
+# Cópiala como deploy/deploy.conf (ignorado por git) y rellena tus datos:
+#   cp deploy/deploy.conf.example deploy/deploy.conf
+# No subas nunca deploy/deploy.conf: describe tu servidor.
+
+# Alias SSH del servidor, definido en tu ~/.ssh/config (Host, HostName, User, IdentityFile)
+HOST=mi-servidor
+
+# Dominio público (su registro DNS A debe apuntar al servidor)
+DOMAIN=ejemplo.com
+
+# Nombre del sitio: carpeta en /var/www y archivo en /etc/caddy/sites
+SITE=speak-english-enzo
+
+# Carpeta del sitio en el servidor (versiones en releases/, la activa en current)
+BASE=/var/www/speak-english-enzo
+
+# Versiones que se conservan para poder volver atrás
+KEEP=5
+
+# Archivo de Caddy del sitio dentro del repo (se instala en /etc/caddy/sites/$SITE.caddy)
+CADDY_SITE_FILE=deploy/site.caddy

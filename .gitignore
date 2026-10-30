@@ -37,6 +37,11 @@ test-results/
 *.p12
 secrets/
 
+# ───────── Infraestructura (datos del servidor, solo en local) ─────────
+deploy/deploy.conf
+deploy/*.local
+*.local.conf
+
 # ───────── Logs ─────────
 logs/
 *.log
