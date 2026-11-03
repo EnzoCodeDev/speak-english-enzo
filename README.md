@@ -46,7 +46,7 @@ sabidos.
 |---|---|
 | 🎯 **200 frases** | Cuatro tandas de 50, escritas solo con las **200 palabras** más frecuentes del inglés hablado y el vocabulario de VRChat. |
 | 🎤 **Voz real** | El navegador te escucha y la app puntúa cada palabra de 0 a 100 %. |
-| 🔒 **Sin trampas** | La frase se desbloquea solo al superar el **80 % dos veces seguidas**. |
+| 🔒 **Sin trampas** | La frase se desbloquea solo al superar el **70 % dos veces seguidas**. |
 | 📖 **Diccionario** | Toca cualquier palabra: significado, pronunciación escrita para hispanohablantes y audio. |
 | 🔁 **Sin repeticiones** | Una frase dominada no vuelve a salir hasta terminar el ciclo de su tanda. |
 | 💾 **Progreso guardado** | Todo se queda en tu navegador; puedes exportarlo e importarlo. |
@@ -140,7 +140,7 @@ completa. Cuando te callas un momento, la app deja de escuchar sola; también pu
 
 ### 5. Revisa el resultado
 
-- La **puntuación** (0–100 %) aparece con una barra; la rayita blanca marca el mínimo (80 %).
+- La **puntuación** (0–100 %) aparece con una barra; la rayita blanca marca el mínimo (70 %).
 - Debajo de la frase ves **cada palabra coloreada**: 🟢 bien · 🟡 regular · 🔴 mal.
   Toca una palabra roja para oír cómo se dice.
 - Los dos indicadores de **Aciertos** (arriba a la derecha) se llenan con cada intento bueno.
@@ -180,7 +180,7 @@ El botón ⚙️ abre el panel de ajustes:
 | Ajuste | Qué hace | Por defecto |
 |---|---|:---:|
 | **Tanda** | Qué tanda practicar (lo mismo que el selector de arriba) | Tanda 4 |
-| **Precisión mínima** | Puntuación necesaria para que un intento cuente (50–100 %) | 80 % |
+| **Precisión mínima** | Puntuación necesaria para que un intento cuente (50–100 %) | 70 % |
 | **Aciertos seguidos** | Cuántas veces seguidas hay que decirla bien (1–5) | 2 |
 | **Acento** | Voz y reconocimiento en inglés americano, británico, australiano o canadiense | en-US |
 | **Leer la frase al aparecer** | Reproduce la frase automáticamente | Sí |

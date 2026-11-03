@@ -26,6 +26,8 @@ export type Settings = {
   /** Marcadores de las migraciones que dejan una tanda nueva activa una sola vez. */
   startedOnSet3?: boolean;
   startedOnSet4?: boolean;
+  /** Marcador de la migración que baja la precisión mínima de 80 a 70 una sola vez. */
+  threshold70ByDefault?: boolean;
 };
 
 export type Mastered = { score: number; attempts: number; successes: number; date: string; round: number };
@@ -76,9 +78,9 @@ export const defaultState = (): AppState => ({
   stats: { totalAttempts: 0, totalSuccess: 0, bestStreak: 0, sessions: 0 },
   streak: 0,
   settings: {
-    threshold: 80, hitsNeeded: 2, lang: "en-US",
+    threshold: 70, hitsNeeded: 2, lang: "en-US",
     category: DEFAULT_SET, autoplay: true, autoplayOnByDefault: true, hideEs: false,
-    startedOnSet3: true, startedOnSet4: true,
+    startedOnSet3: true, startedOnSet4: true, threshold70ByDefault: true,
   },
 });
 
@@ -116,6 +118,12 @@ export function loadState(): AppState {
       st.settings.autoplayOnByDefault = true;
     }
     delete (st.settings as Partial<Settings> & { autoplayMigrated?: boolean }).autoplayMigrated;
+    // La precisión mínima por defecto pasó de 80 a 70: se baja una sola vez,
+    // y solo si seguía en el valor por defecto antiguo (no si se cambió a mano).
+    if (!(saved.settings || {}).threshold70ByDefault) {
+      if (st.settings.threshold === 80) st.settings.threshold = 70;
+      st.settings.threshold70ByDefault = true;
+    }
     // El progreso va por posición: si cambió la lista de frases, se descarta.
     if ((saved.phrasesVersion || 1) < PHRASES_VERSION) {
       Object.assign(st, { mastered: {}, records: {}, rounds: {}, queue: [], current: null });
