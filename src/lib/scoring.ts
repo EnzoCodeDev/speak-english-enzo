@@ -112,6 +112,23 @@ function reconcileSplits(target: string[], said: string[]): string[] {
   return out;
 }
 
+/* El reconocedor confunde algunas contracciones con palabras que suenan
+   igual: "she's" llega como "cheese", "he's" como "his". Solo se corrige si
+   la frase objetivo lleva la forma buena y no la palabra confundida. */
+const SOUNDALIKES: Record<string, string[]> = {
+  cheese: ["she", "is"], sheez: ["she", "is"], sheesh: ["she", "is"], shees: ["she", "is"],
+  his: ["he", "is"], hees: ["he", "is"],
+};
+
+function reconcileSoundalikes(target: string[], said: string[]): string[] {
+  const targetSet = new Set(target);
+  const joined = " " + target.join(" ") + " ";
+  return said.flatMap((w) => {
+    const fix = SOUNDALIKES[w];
+    return fix && !targetSet.has(w) && joined.includes(" " + fix.join(" ") + " ") ? fix : [w];
+  });
+}
+
 /* Alineación palabra a palabra (Needleman-Wunsch simplificado). */
 function alignWords(target: string[], said: string[]): WordResult[] {
   const m = target.length, n = said.length;
@@ -147,7 +164,7 @@ export function evaluate(targetText: string, saidText: string): Evaluation {
   const target = normalize(targetText);
   const raw = normalize(saidText);
   if (!raw.length) return { score: 0, words: target.map((w) => ({ word: w, sim: 0 })) };
-  const said = reconcileSplits(target, raw);
+  const said = reconcileSplits(target, reconcileSoundalikes(target, raw));
   const words = alignWords(target, said);
 
   // Crédito completo solo si la palabra es exacta; una "parecida" casi nada.
