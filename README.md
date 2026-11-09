@@ -4,7 +4,7 @@
 
 # 🎙️ Speak English Enzo
 
-**Practica en voz alta las 200 frases más usadas para hablar en VRChat.**<br>
+**Practica en voz alta 250 frases de uso común para hablar en VRChat.**<br>
 Reconocimiento de voz real: no pasas a la siguiente frase hasta que la pronuncias bien.
 
 [![Abrir la app](https://img.shields.io/badge/▶_Abrir_la_app-speak--english--enzo.enzocode.dev-f2a43a?style=for-the-badge&labelColor=15132a)](https://speak-english-enzo.enzocode.dev)
@@ -44,7 +44,7 @@ sabidos.
 
 | | |
 |---|---|
-| 🎯 **200 frases** | Cuatro tandas de 50, escritas solo con las **200 palabras** más frecuentes del inglés hablado y el vocabulario de VRChat. |
+| 🎯 **250 frases** | Cinco tandas de 50, escritas solo con las **200 palabras** más frecuentes del inglés hablado y el vocabulario de VRChat. |
 | 🎤 **Voz real** | El navegador te escucha y la app puntúa cada palabra de 0 a 100 %. |
 | 🔒 **Sin trampas** | La frase se desbloquea solo al superar el **70 % dos veces seguidas**. |
 | 📖 **Diccionario** | Toca cualquier palabra: significado, pronunciación escrita para hispanohablantes y audio. |
@@ -107,9 +107,9 @@ sabidos.
 
 ### 1. Elige una tanda
 
-En el selector de arriba eliges qué practicar: **Tanda 1**, **Tanda 2**, **Tanda 3** o **Tanda 4** (la que
+En el selector de arriba eliges qué practicar: **Tanda 1**, **Tanda 2**, **Tanda 3**, **Tanda 4** o **Tanda 5** (la que
 viene activa). Cada opción muestra cuántas frases llevas dominadas, por ejemplo
-`Tanda 4 · 18/50`, y cuántas rondas completas tienes. La barra naranja de debajo es tu avance en
+`Tanda 5 · 18/50`, y cuántas rondas completas tienes. La barra naranja de debajo es tu avance en
 la tanda actual.
 
 ### 2. Escucha la frase
@@ -179,7 +179,7 @@ El botón ⚙️ abre el panel de ajustes:
 
 | Ajuste | Qué hace | Por defecto |
 |---|---|:---:|
-| **Tanda** | Qué tanda practicar (lo mismo que el selector de arriba) | Tanda 4 |
+| **Tanda** | Qué tanda practicar (lo mismo que el selector de arriba) | Tanda 5 |
 | **Precisión mínima** | Puntuación necesaria para que un intento cuente (50–100 %) | 70 % |
 | **Aciertos seguidos** | Cuántas veces seguidas hay que decirla bien (1–5) | 2 |
 | **Acento** | Voz y reconocimiento en inglés americano, británico, australiano o canadiense | en-US |
@@ -305,7 +305,7 @@ speak-english-enzo/
 │   │   ├── ClientApp.tsx       # carga la app solo en el navegador
 │   │   └── ui.tsx              # botones, panel lateral, interruptores, teclas
 │   ├── data/
-│   │   ├── phrases.ts          # las 200 frases en tandas de 50
+│   │   ├── phrases.ts          # las 250 frases en tandas de 50
 │   │   ├── dictionary.ts       # significado y pronunciación de cada palabra
 │   │   └── palabras-conversacion.ts  # las 200 palabras permitidas
 │   └── lib/

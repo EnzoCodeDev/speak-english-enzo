@@ -338,7 +338,7 @@ export default function SpeakApp() {
           </span>
           <div className="min-w-0">
             <h1 className="truncate font-display text-base leading-tight font-bold tracking-tight md:text-xl">Speak English Enzo</h1>
-            <p className="hidden text-xs text-ink-400 sm:block">200 frases para hablar en VRChat</p>
+            <p className="hidden text-xs text-ink-400 sm:block">250 frases para hablar en VRChat</p>
           </div>
         </div>
         <div className="flex shrink-0 gap-2">

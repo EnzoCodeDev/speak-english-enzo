@@ -12,9 +12,9 @@ const bricolage = Bricolage_Grotesque({
 });
 
 export const metadata: Metadata = {
-  title: "Speak English Enzo — 200 frases para hablar en VRChat",
+  title: "Speak English Enzo — 250 frases para hablar en VRChat",
   description:
-    "Practica en voz alta las 200 frases más usadas para conversar en VRChat. Reconocimiento de voz real: no avanzas hasta pronunciarla bien.",
+    "Practica en voz alta 250 frases de uso común para conversar en VRChat. Reconocimiento de voz real: no avanzas hasta pronunciarla bien.",
   applicationName: "Speak English Enzo",
 };
 

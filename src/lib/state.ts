@@ -26,6 +26,7 @@ export type Settings = {
   /** Marcadores de las migraciones que dejan una tanda nueva activa una sola vez. */
   startedOnSet3?: boolean;
   startedOnSet4?: boolean;
+  startedOnSet5?: boolean;
   /** Marcador de la migración que baja la precisión mínima de 80 a 70 una sola vez. */
   threshold70ByDefault?: boolean;
 };
@@ -48,7 +49,7 @@ export type AppState = {
 export const SET_BY_ID: Record<string, PhraseSet> = Object.fromEntries(SETS.map((s) => [s.id, s]));
 export const SET_VALUES = SETS.map((s) => "set:" + s.id);
 /** Tanda por defecto. */
-export const DEFAULT_SET = "set:set4";
+export const DEFAULT_SET = "set:set5";
 
 export function optionLabel(value: string): string {
   return SET_BY_ID[value.split(":")[1]]?.label ?? value;
@@ -80,7 +81,7 @@ export const defaultState = (): AppState => ({
   settings: {
     threshold: 70, hitsNeeded: 2, lang: "en-US",
     category: DEFAULT_SET, autoplay: true, autoplayOnByDefault: true, hideEs: false,
-    startedOnSet3: true, startedOnSet4: true, threshold70ByDefault: true,
+    startedOnSet3: true, startedOnSet4: true, startedOnSet5: true, threshold70ByDefault: true,
   },
 });
 
@@ -105,10 +106,11 @@ export function loadState(): AppState {
     const [kind, name] = st.settings.category.split(":");
     if (kind !== "set" || !SET_BY_ID[name]) st.settings.category = DEFAULT_SET;
     // Una sola vez: pasar a la tanda nueva (el marcador se mira en `saved`).
-    if (!(saved.settings || {}).startedOnSet4) {
+    if (!(saved.settings || {}).startedOnSet5) {
       st.settings.category = DEFAULT_SET;
       st.settings.startedOnSet3 = true;
       st.settings.startedOnSet4 = true;
+      st.settings.startedOnSet5 = true;
     }
     if (st.rounds.all && st.rounds["set:set1"] === undefined) st.rounds["set:set1"] = st.rounds.all;
     // La lectura automática pasó a venir activada: se enciende una sola vez.

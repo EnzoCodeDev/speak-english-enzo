@@ -27,7 +27,7 @@
     "tailwindcss": "^4",
     "typescript": "^5"
   },
-  "description": "Speak English Enzo: practica la pronunciación de las 200 frases más usadas en VRChat con reconocimiento de voz.",
+  "description": "Speak English Enzo: practica la pronunciación de 250 frases de uso común en VRChat con reconocimiento de voz.",
   "engines": {
     "node": ">=22.18"
   }
