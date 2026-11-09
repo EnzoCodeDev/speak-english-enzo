@@ -6,13 +6,13 @@ import {
   ArrowRight, ChartColumn, ChevronDown, Eye, Flame, Hand, Lock, Mic, RotateCcw, Settings2, Snail, Square,
   TriangleAlert, Volume2,
 } from "lucide-react";
-import { PHRASES } from "@/data/phrases";
+import { PHRASES, SET_GROUPS } from "@/data/phrases";
 import { cleanChunks, evaluateBest, normalize, type Chunk, type Evaluation, type WordResult } from "@/lib/scoring";
 import {
   RECOGNITION_ERRORS, getRecognizerCtor, isMobile, speak, stopSpeaking, type Recognizer,
 } from "@/lib/speech";
 import {
-  SET_VALUES, STORAGE_KEY, advance, defaultState, fromImported, optionLabel, progressOf,
+  STORAGE_KEY, advance, defaultState, fromImported, optionLabel, progressOf,
   recordAttempt, roundsDone, setCategory, setOfPhrase, updateSettings, type Settings,
 } from "@/lib/state";
 import { Store } from "@/lib/store";
@@ -338,7 +338,7 @@ export default function SpeakApp() {
           </span>
           <div className="min-w-0">
             <h1 className="truncate font-display text-base leading-tight font-bold tracking-tight md:text-xl">Speak English Enzo</h1>
-            <p className="hidden text-xs text-ink-400 sm:block">250 frases para hablar en VRChat</p>
+            <p className="hidden text-xs text-ink-400 sm:block">{PHRASES.length} frases · VRChat y entrevistas</p>
           </div>
         </div>
         <div className="flex shrink-0 gap-2">
@@ -361,7 +361,13 @@ export default function SpeakApp() {
             onChange={(e) => chooseCategory(e.target.value)}
             className="w-full appearance-none truncate rounded-xl border border-ink-800 bg-ink-900 py-2.5 pr-10 pl-3.5 text-sm font-medium text-ink-100 transition hover:border-ink-600 focus-visible:border-signal"
           >
-            {SET_VALUES.map((v) => <option key={v} value={v}>{optionText(v)}</option>)}
+            {SET_GROUPS.map((group) => (
+              <optgroup key={group.label} label={group.label}>
+                {group.sets.map((set) => (
+                  <option key={set.id} value={`set:${set.id}`}>{optionText(`set:${set.id}`)}</option>
+                ))}
+              </optgroup>
+            ))}
           </select>
           <ChevronDown className="pointer-events-none absolute top-1/2 right-3 size-4 -translate-y-1/2 text-ink-400" />
         </label>
@@ -387,9 +393,11 @@ export default function SpeakApp() {
       <main className="relative mt-3 flex min-h-0 flex-1 flex-col rounded-3xl border border-ink-800 bg-ink-900/80 shadow-[0_40px_100px_-40px_var(--color-shadow)] md:mt-6 md:rounded-[28px]">
         <div className="flex min-h-0 flex-1 flex-col overflow-y-auto px-5 pt-4 pb-4 md:px-12 md:pt-10 md:pb-8">
           <div className="flex items-center justify-between text-xs font-medium text-ink-400">
-            <span className="flex items-center gap-2">
+            <span className="flex min-w-0 items-center gap-2 pr-2">
               <span className="size-1.5 rounded-full bg-signal" />
-              {setOfPhrase(phraseIndex)?.label} · frase {phraseIndex - (setOfPhrase(phraseIndex)?.start ?? 0) + 1}
+              <span className="truncate" title={setOfPhrase(phraseIndex)?.label}>
+                {setOfPhrase(phraseIndex)?.label} · frase {phraseIndex - (setOfPhrase(phraseIndex)?.start ?? 0) + 1}
+              </span>
             </span>
             <span className="flex items-center gap-2" aria-label={`${hits} de ${hitsNeeded} aciertos seguidos`}>
               Aciertos

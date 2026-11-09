@@ -8,7 +8,8 @@
     "start": "npx --yes serve out -l 8082",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
-    "validate": "node scripts/validar-frases.mts"
+    "validate": "node scripts/validar-frases.mts",
+    "test": "node --test scripts/interviews.test.mts"
   },
   "dependencies": {
     "clsx": "^2.1.1",
@@ -27,7 +28,7 @@
     "tailwindcss": "^4",
     "typescript": "^5"
   },
-  "description": "Speak English Enzo: practica la pronunciación de 250 frases de uso común en VRChat con reconocimiento de voz.",
+  "description": "Speak English Enzo: 500 frases en inglés para VRChat y entrevistas de programación, con traducción y reconocimiento de voz.",
   "engines": {
     "node": ">=22.18"
   }

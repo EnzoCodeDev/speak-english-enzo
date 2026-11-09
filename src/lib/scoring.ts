@@ -129,6 +129,39 @@ function reconcileSoundalikes(target: string[], said: string[]): string[] {
   });
 }
 
+// El dictado puede separar las letras de las siglas. Solo se unen variantes
+// conocidas si la frase objetivo contiene esa sigla; no se aceptan letras distintas.
+const TECHNICAL_SPELLINGS: readonly (readonly [string, readonly string[]])[] = [
+  ["postgresql", ["postgre", "s", "q", "l"]],
+  ["postgresql", ["postgres", "q", "l"]],
+  ["postgresql", ["postgre", "sql"]],
+  ["postgresql", ["postgre", "sequel"]],
+  ["http", ["h", "t", "t", "p"]],
+  ["html", ["h", "t", "m", "l"]],
+  ["api", ["a", "p", "i"]],
+  ["css", ["c", "s", "s"]],
+  ["sql", ["s", "q", "l"]],
+  ["sql", ["sequel"]],
+  ["ai", ["a", "i"]],
+];
+
+function reconcileTechnicalSpellings(target: string[], said: string[]): string[] {
+  const targetSet = new Set(target);
+  const allowed = TECHNICAL_SPELLINGS.filter(([word]) => targetSet.has(word));
+  if (!allowed.length) return said;
+  const out: string[] = [];
+  for (let i = 0; i < said.length; i++) {
+    const match = allowed.find(([, spelling]) => spelling.every((word, j) => said[i + j] === word));
+    if (match) {
+      out.push(match[0]);
+      i += match[1].length - 1;
+    } else {
+      out.push(said[i]);
+    }
+  }
+  return out;
+}
+
 /* Alineación palabra a palabra (Needleman-Wunsch simplificado). */
 function alignWords(target: string[], said: string[]): WordResult[] {
   const m = target.length, n = said.length;
@@ -164,7 +197,7 @@ export function evaluate(targetText: string, saidText: string): Evaluation {
   const target = normalize(targetText);
   const raw = normalize(saidText);
   if (!raw.length) return { score: 0, words: target.map((w) => ({ word: w, sim: 0 })) };
-  const said = reconcileSplits(target, reconcileSoundalikes(target, raw));
+  const said = reconcileSplits(target, reconcileSoundalikes(target, reconcileTechnicalSpellings(target, raw)));
   const words = alignWords(target, said);
 
   // Crédito completo solo si la palabra es exacta; una "parecida" casi nada.

@@ -1,13 +1,13 @@
-/* Validador de phrases.js. Comprueba que ninguna frase se repita ni se parezca
+/* Validador de phrases.ts. Comprueba que ninguna frase se repita ni se parezca
    demasiado a otra, que cada tanda tenga variedad real de arranques y que
-   todas usen solo las 200 palabras de palabras-conversacion.ts.
+   VRChat use sus 200 palabras. Las entrevistas amplían el vocabulario,
+   pero todas sus palabras deben tener traducción y pronunciación.
    Uso: npm run validate   (Node >= 22.18 ejecuta TypeScript directamente). */
 import { PHRASES as P, SETS } from '../src/data/phrases.ts';
 import { DICT } from '../src/data/dictionary.ts';
 import { PALABRAS_CONVERSACION as LISTA } from '../src/data/palabras-conversacion.ts';
 const UMBRAL = 0.75;          // similitud a partir de la cual dos frases "son la misma"
-// Frases ya practicadas que no se pueden mover. Hoy ninguna: la lista de 200
-// se estrenó con el progreso a cero (PHRASES_VERSION 3 en app.js).
+// No se permiten duplicados nuevos ni heredados; los tests protegen el prefijo publicado.
 const INTOCABLES = 0;
 const norm = s => s.toLowerCase().replace(/[^a-z0-9 ]/g, '').replace(/\s+/g, ' ').trim();
 const lev = (a: string, b: string): number => { const m = a.length, n = b.length; let pr = [...Array(n + 1).keys()];
@@ -59,36 +59,47 @@ SETS.forEach((s, idx) => {
 console.log('\n   tandas por debajo del listón:', flojas.length ? flojas.join(', ') : 'ninguna');
 
 // 4) integridad
-const rangos = SETS.every((s, i) => s.start === (i ? SETS[i - 1].end : 0) && s.end > s.start) && SETS[SETS.length - 1].end === P.length;
+const rangos = SETS.every((s, i) => s.start === (i ? SETS[i - 1].end : 0) && s.end - s.start === 50) && SETS[SETS.length - 1].end === P.length;
 const cats = new Set(['preguntas', 'respuestas', 'exclamaciones', 'sentimientos', 'comprension',
-  'cortesia', 'tecnologia', 'planes', 'dia a dia']);
+  'cortesia', 'tecnologia', 'planes', 'dia a dia', 'entrevista personal',
+  'entrevista equipo', 'entrevista codigo', 'entrevista web', 'entrevista sistemas']);
 const nuevas = [...new Set(P.map(p => p[2]))].filter(c => !cats.has(c));
 const campos = P.every(p => Array.isArray(p) && p.length === 3 && p.every(x => typeof x === 'string' && x.trim()));
 console.log('\n4) integridad:');
-console.log('   tandas sin huecos        :', rangos ? 'SI' : 'NO');                       if (!rangos)   fallos++;
+console.log('   tandas de 50 sin huecos  :', rangos ? 'SI' : 'NO');                       if (!rangos)   fallos++;
 console.log('   categorias conocidas     :', nuevas.length ? ('NO -> ' + nuevas) : 'SI'); if (nuevas.length) fallos++;
 console.log('   3 campos no vacios       :', campos ? 'SI' : 'NO');                       if (!campos)   fallos++;
 
 // 5) cobertura del diccionario: una palabra sin entrada no se puede tocar
 const palabras = s => s.toLowerCase().replace(/[^a-z' ]/g, ' ').split(/\s+/).filter(Boolean);
 const sinEntrada = new Set();
-P.forEach(p => palabras(p[0]).forEach(w => { if (!DICT[w]) sinEntrada.add(w); }));
+P.forEach(p => palabras(p[0]).forEach(w => {
+  if (!DICT[w] || DICT[w].length !== 2 || DICT[w].some(x => !x.trim())) sinEntrada.add(w);
+}));
 console.log('\n5) palabras sin entrada en dictionary.ts:', sinEntrada.size || 'ninguna');
 if (sinEntrada.size) { console.log('   ' + [...sinEntrada].sort().join(' ')); fallos++; }
 
-// 6) vocabulario: solo las 200 palabras de conversación
+// 6) vocabulario: el límite de 200 palabras sigue vigente SOLO en VRChat.
 const VOCAB = new Set(LISTA);
+const conversacion = SETS.filter(s => s.group === 'VRChat').flatMap(s =>
+  P.slice(s.start, s.end).map((p, i) => ({ p, index: s.start + i })));
 const fueraLista = [];
-P.slice(INTOCABLES).forEach((p, i) => { const f = palabras(p[0]).filter(w => !VOCAB.has(w));
-  if (f.length) fueraLista.push('#' + (INTOCABLES + i + 1) + ' "' + p[0] + '" <- ' + f.join(', ')); });
-const usadas = new Set(P.slice(INTOCABLES).flatMap(p => palabras(p[0])));
+conversacion.forEach(({ p, index }) => { const f = palabras(p[0]).filter(w => !VOCAB.has(w));
+  if (f.length) fueraLista.push('#' + (index + 1) + ' "' + p[0] + '" <- ' + f.join(', ')); });
+const usadas = new Set(conversacion.flatMap(({ p }) => palabras(p[0])));
 const sinUso = LISTA.filter(w => !usadas.has(w));
-console.log('\n6) vocabulario de conversación:');
+console.log('\n6) vocabulario de VRChat (' + conversacion.length + ' frases):');
 console.log('   palabras en la lista     :', VOCAB.size, VOCAB.size === 200 && LISTA.length === 200 ? '' : '(deben ser 200 distintas)');
 if (VOCAB.size !== 200 || LISTA.length !== 200) fallos++;
 console.log('   frases con palabras fuera:', fueraLista.length || 'ninguna');
 fueraLista.forEach(f => { console.log('     ' + f); fallos++; });
 console.log('   palabras de la lista sin usar:', sinUso.length ? sinUso.join(' ') : 'ninguna');
+const entrevistaSets = SETS.filter(s => s.group === 'Entrevistas de programación');
+console.log('   frases de entrevistas con vocabulario ampliado:', entrevistaSets.reduce((n, s) => n + s.end - s.start, 0));
+const categoriasPorTanda = ['entrevista personal', 'entrevista equipo', 'entrevista codigo', 'entrevista web', 'entrevista sistemas'];
+const temasCorrectos = entrevistaSets.every((s, i) => P.slice(s.start, s.end).every(p => p[2] === categoriasPorTanda[i]));
+console.log('   entrevistas en su tema   :', temasCorrectos ? 'SI' : 'NO');
+if (!temasCorrectos) fallos++;
 
 console.log('\n' + (fallos ? 'FALLOS: ' + fallos : '*** TODO CORRECTO ***'));
 process.exit(fallos ? 1 : 0);

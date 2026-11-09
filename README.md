@@ -4,7 +4,7 @@
 
 # 🎙️ Speak English Enzo
 
-**Practica en voz alta 250 frases de uso común para hablar en VRChat.**<br>
+**Practica en voz alta 500 frases: VRChat y entrevistas de programación.**<br>
 Reconocimiento de voz real: no pasas a la siguiente frase hasta que la pronuncias bien.
 
 [![Abrir la app](https://img.shields.io/badge/▶_Abrir_la_app-speak--english--enzo.enzocode.dev-f2a43a?style=for-the-badge&labelColor=15132a)](https://speak-english-enzo.enzocode.dev)
@@ -37,14 +37,14 @@ Reconocimiento de voz real: no pasas a la siguiente frase hasta que la pronuncia
 
 ## ✨ Qué es
 
-Speak English Enzo es una app web para **entrenar la pronunciación** con frases reales de
-conversación en VRChat: preguntas para que la charla siga, reacciones, problemas de micro y
-voz, avatares y planes para ir a otro mundo. **No hay saludos ni despedidas**, que ya se dan por
-sabidos.
+Speak English Enzo es una app web para **entrenar la pronunciación** en dos contextos:
+conversación informal en VRChat y entrevistas de trabajo en programación. Hay preguntas,
+respuestas y explicaciones cortas, con traducción al español y diccionario tocable.
+Las respuestas de entrevistas son **ejemplos de práctica**: adáptalas a tu experiencia real.
 
 | | |
 |---|---|
-| 🎯 **250 frases** | Cinco tandas de 50, escritas solo con las **200 palabras** más frecuentes del inglés hablado y el vocabulario de VRChat. |
+| 🎯 **500 frases** | Diez tandas de 50: **250 de VRChat** con su vocabulario de 200 palabras y **250 de entrevistas** con vocabulario profesional y técnico ampliado. |
 | 🎤 **Voz real** | El navegador te escucha y la app puntúa cada palabra de 0 a 100 %. |
 | 🔒 **Sin trampas** | La frase se desbloquea solo al superar el **70 % dos veces seguidas**. |
 | 📖 **Diccionario** | Toca cualquier palabra: significado, pronunciación escrita para hispanohablantes y audio. |
@@ -107,10 +107,24 @@ sabidos.
 
 ### 1. Elige una tanda
 
-En el selector de arriba eliges qué practicar: **Tanda 1**, **Tanda 2**, **Tanda 3**, **Tanda 4** o **Tanda 5** (la que
-viene activa). Cada opción muestra cuántas frases llevas dominadas, por ejemplo
-`Tanda 5 · 18/50`, y cuántas rondas completas tienes. La barra naranja de debajo es tu avance en
-la tanda actual.
+El selector agrupa las tandas en **VRChat** (1–5) y **Entrevistas de programación** (6–10).
+Cada tanda tiene 50 frases y conserva su propio progreso y sus rondas. Por defecto se abre
+**Tanda 6 · Perfil**; la actualización la activa una sola vez, sin borrar lo practicado.
+Después se respeta la tanda que elijas. La barra naranja muestra tu avance en la tanda actual.
+
+| Tanda | Contenido |
+|---|---|
+| 1–5 | Conversación en VRChat: preguntas, reacciones, micro, avatares y planes |
+| 6 · Perfil | Presentarte, experiencia, motivación, fortalezas y objetivos |
+| 7 · Equipo | Proyectos, colaboración, decisiones, feedback y situaciones de trabajo |
+| 8 · Código | Aclarar requisitos, explicar algoritmos, complejidad y casos límite |
+| 9 · Web | JavaScript, TypeScript, React, accesibilidad, APIs y PostgreSQL |
+| 10 · Sistemas | Arquitectura, pruebas, producción, uso responsable de IA y preguntas al equipo |
+
+El temario de entrevistas se revisó el **9 de noviembre de 2026** con guías públicas de
+Microsoft, Atlassian y Amazon (véase `docs/entrevistas.md`). Las frases son originales para
+practicar inglés: no son preguntas filtradas ni un ranking de frecuencia. El uso de IA en una
+entrevista depende de las reglas del proceso; pregunta antes de usarla.
 
 ### 2. Escucha la frase
 
@@ -179,7 +193,7 @@ El botón ⚙️ abre el panel de ajustes:
 
 | Ajuste | Qué hace | Por defecto |
 |---|---|:---:|
-| **Tanda** | Qué tanda practicar (lo mismo que el selector de arriba) | Tanda 5 |
+| **Tanda** | Qué tanda practicar (lo mismo que el selector de arriba) | Tanda 6 · Perfil |
 | **Precisión mínima** | Puntuación necesaria para que un intento cuente (50–100 %) | 70 % |
 | **Aciertos seguidos** | Cuántas veces seguidas hay que decirla bien (1–5) | 2 |
 | **Acento** | Voz y reconocimiento en inglés americano, británico, australiano o canadiense | en-US |
@@ -202,6 +216,8 @@ El botón ⚙️ abre el panel de ajustes:
    letra y grafías equivalentes unificadas (`OK` → `okay`, `mike` → `mic`).
 2. **Alineación palabra a palabra** (Needleman-Wunsch) para saber qué palabra de la frase
    corresponde a cada palabra dicha, aunque te saltes o añadas alguna.
+   Las siglas técnicas conocidas admiten letras separadas (`A P I` → `API`, `S Q L` → `SQL`)
+   solo cuando esa sigla aparece en la frase objetivo; no se perdonan letras diferentes.
 3. **Crédito por palabra.** Solo cuenta entera si es exacta; una palabra parecida (mal
    pronunciada) recibe un 25 % y una distinta, nada.
 4. **Similitud por caracteres** con una curva que solo suma cuando de verdad se parece.
@@ -271,6 +287,7 @@ npm run dev        # http://localhost:8082
 | `npm run lint` | ESLint |
 | `npm run typecheck` | Comprobación de tipos |
 | `npm run validate` | Valida las frases: duplicados, variedad, vocabulario y diccionario |
+| `npm test` | Comprueba las 500 frases, puntuación, diccionario y migración sin perder progreso |
 
 > [!WARNING]
 > El puerto es fijo a propósito: el progreso va por origen, así que `localhost:8083` sería un
@@ -278,11 +295,12 @@ npm run dev        # http://localhost:8082
 
 ### Añadir o cambiar frases
 
-1. Edita `src/data/phrases.ts` (formato `[inglés, español, categoría]`). Cada 50 frases forman
-   una tanda.
-2. Usa solo palabras de `src/data/palabras-conversacion.ts` y asegúrate de que todas están en
-   `src/data/dictionary.ts` (`"palabra": ["significado", "PRO-nun-cia-ción"]`).
-3. Ejecuta `npm run validate` hasta ver `*** TODO CORRECTO ***`.
+1. Añade al final de `src/data/phrases.ts` (formato `[inglés, español, categoría]`). Cada 50
+   frases forman una tanda. Las entrevistas viven en `src/data/interview-set-6.ts` a `10.ts`.
+2. En **VRChat**, usa solo palabras de `src/data/palabras-conversacion.ts`. Las **entrevistas**
+   pueden ampliar el vocabulario; cada módulo exporta también sus entradas nuevas de diccionario.
+   Todas las palabras necesitan significado y pronunciación en `src/data/dictionary.ts`.
+3. Ejecuta `npm run validate` hasta ver `*** TODO CORRECTO ***` y `npm test`.
 
 > [!CAUTION]
 > El progreso se guarda **por la posición** de cada frase. No reordenes ni reescribas frases
@@ -305,9 +323,10 @@ speak-english-enzo/
 │   │   ├── ClientApp.tsx       # carga la app solo en el navegador
 │   │   └── ui.tsx              # botones, panel lateral, interruptores, teclas
 │   ├── data/
-│   │   ├── phrases.ts          # las 250 frases en tandas de 50
+│   │   ├── phrases.ts          # las 500 frases y sus tandas/grupos
+│   │   ├── interview-set-*.ts  # 250 frases de entrevistas y vocabulario nuevo
 │   │   ├── dictionary.ts       # significado y pronunciación de cada palabra
-│   │   └── palabras-conversacion.ts  # las 200 palabras permitidas
+│   │   └── palabras-conversacion.ts  # las 200 palabras permitidas en VRChat
 │   └── lib/
 │       ├── scoring.ts          # normalización, alineación y puntuación
 │       ├── state.ts            # progreso, migraciones y cola sin repeticiones
@@ -372,5 +391,5 @@ desplegar en contenedor: `docker compose up -d --build`.
 ---
 
 <div align="center">
-<sub>Hecho por <a href="https://github.com/EnzoCodeDev">EnzoCodeDev</a> para hablar inglés en VRChat sin trabarse 🥽</sub>
+<sub>Hecho por <a href="https://github.com/EnzoCodeDev">EnzoCodeDev</a> para practicar inglés en conversaciones y entrevistas 🎙️</sub>
 </div>

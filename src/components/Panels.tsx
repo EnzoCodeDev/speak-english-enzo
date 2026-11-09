@@ -3,9 +3,9 @@
 import { useRef } from "react";
 import clsx from "clsx";
 import { Download, Trash2, Upload } from "lucide-react";
-import { PHRASES } from "@/data/phrases";
+import { PHRASES, SET_GROUPS } from "@/data/phrases";
 import {
-  SET_VALUES, currentRound, optionLabel, optionSize, progressOf, roundsDone,
+  SET_VALUES, currentRound, optionLabel, progressOf, roundsDone,
   type AppState, type Lang, type Settings,
 } from "@/lib/state";
 import { ThemePicker } from "./Theme";
@@ -66,40 +66,30 @@ export function SettingsPanel({
   const fileRef = useRef<HTMLInputElement>(null);
 
   const option = (value: string) => {
-    const active = s.category === value;
     const p = progressOf(state, value);
     const r = roundsDone(state, value);
     return (
-      <button
-        key={value}
-        type="button"
-        onClick={() => onCategory(value)}
-        aria-pressed={active}
-        className={clsx(
-          "flex w-full items-center justify-between rounded-xl border px-3.5 py-2.5 text-left text-sm transition",
-          active ? "border-signal bg-signal-soft text-ink-100" : "border-ink-800 bg-ink-850/60 text-ink-300 hover:border-ink-600 hover:text-ink-100",
-        )}
-      >
-        <span className="font-medium">
-          {optionLabel(value)} <span className="text-ink-400">· {optionSize(value)}</span>
-        </span>
-        <span className="font-mono text-xs text-ink-400 tabular-nums">
-          {p.done}/{p.total}
-          {r > 0 && <span className="ml-2 text-signal-fg">{r}×</span>}
-        </span>
-      </button>
+      <option key={value} value={value}>
+        {optionLabel(value)} · {p.done}/{p.total}{r > 0 ? ` · ${r}×` : ""}
+      </option>
     );
   };
 
   return (
     <div>
       <Section title="Tanda">
-        <div className="grid gap-2">
-          {SET_VALUES.map(option)}
-        </div>
-        <p className="mt-3 text-xs leading-relaxed text-ink-400">
-          Cada tanda lleva su propio ciclo: el número en ámbar son las rondas completas.
-        </p>
+        <select
+          aria-label="Tanda en ajustes"
+          value={s.category}
+          onChange={(e) => onCategory(e.target.value)}
+          className="w-full rounded-xl border border-ink-700 bg-ink-850 px-3 py-2.5 text-sm text-ink-100"
+        >
+          {SET_GROUPS.map((group) => (
+            <optgroup key={group.label} label={group.label}>
+              {group.sets.map((set) => option(`set:${set.id}`))}
+            </optgroup>
+          ))}
+        </select>
       </Section>
 
       <Section title="Apariencia">
@@ -194,8 +184,8 @@ export function StatsPanel({ state }: { state: AppState }) {
       <Section title="Por tanda">
         <ul className="space-y-3">
           {sets.map((c) => (
-            <li key={c.name} className="grid grid-cols-[5rem_1fr_3rem] items-center gap-3 text-sm">
-              <span className="truncate text-ink-300">{c.name}</span>
+            <li key={c.name} className="grid grid-cols-[minmax(0,1.5fr)_1fr_3rem] items-center gap-3 text-sm">
+              <span className="truncate text-ink-300" title={c.name}>{c.name}</span>
               <span className="h-1.5 overflow-hidden rounded-full bg-ink-800">
                 <span className="block h-full rounded-full bg-signal transition-[width] duration-700"
                   style={{ width: `${c.total ? (c.done / c.total) * 100 : 0}%` }} />

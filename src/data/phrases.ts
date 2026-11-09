@@ -1,8 +1,13 @@
-// 250 frases de uso común para conversar en VRChat, en tandas de 50.
-// Sin saludos ni despedidas: se dan por sabidos. Escritas solo con las 200
-// palabras de palabras-conversacion.js.
+// 500 frases en tandas de 50: 250 de VRChat y 250 de entrevistas de programación.
+// VRChat conserva su vocabulario de 200 palabras; las entrevistas lo amplían.
 // Formato: [inglés, español, categoría]
 // El orden importa: el progreso guarda cada frase por su posición.
+import { INTERVIEW_SET_6 } from "./interview-set-6.ts";
+import { INTERVIEW_SET_7 } from "./interview-set-7.ts";
+import { INTERVIEW_SET_8 } from "./interview-set-8.ts";
+import { INTERVIEW_SET_9 } from "./interview-set-9.ts";
+import { INTERVIEW_SET_10 } from "./interview-set-10.ts";
+
 export type Phrase = [en: string, es: string, category: string];
 
 export const PHRASES: Phrase[] = [
@@ -258,19 +263,39 @@ export const PHRASES: Phrase[] = [
 ,["Wait, your voice is weird now.","Espera, tu voz suena rara ahora.","tecnologia"]
 ,["Everyone can hear your game.","Todos pueden oír tu juego.","tecnologia"]
 ,["Discord is not working right now.","Discord no funciona ahora mismo.","tecnologia"]
+// Tandas 6–10: entrevistas de programación. No mover: el progreso usa el índice.
+,...INTERVIEW_SET_6
+,...INTERVIEW_SET_7
+,...INTERVIEW_SET_8
+,...INTERVIEW_SET_9
+,...INTERVIEW_SET_10
 ];
 
 // Cada bloque de TANDA frases es una tanda independiente.
 const TANDA = 50;
 
-export type PhraseSet = { id: string; label: string; start: number; end: number };
+export type PhraseSet = {
+  id: string;
+  label: string;
+  group: "VRChat" | "Entrevistas de programación";
+  start: number;
+  end: number;
+};
+
+const INTERVIEW_TOPICS = ["Perfil", "Equipo", "Código", "Web", "Sistemas"];
 
 export const SETS: PhraseSet[] = Array.from(
   { length: Math.ceil(PHRASES.length / TANDA) },
   (_, i) => ({
     id: `set${i + 1}`,
-    label: `Tanda ${i + 1}`,
+    label: `Tanda ${i + 1}${INTERVIEW_TOPICS[i - 5] ? ` · ${INTERVIEW_TOPICS[i - 5]}` : ""}`,
+    group: i < 5 ? "VRChat" : "Entrevistas de programación",
     start: i * TANDA,
     end: Math.min((i + 1) * TANDA, PHRASES.length),
   }),
 );
+
+export const SET_GROUPS = (["VRChat", "Entrevistas de programación"] as const).map((label) => ({
+  label,
+  sets: SETS.filter((set) => set.group === label),
+}));

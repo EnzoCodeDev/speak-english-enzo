@@ -1,9 +1,10 @@
-// Las 200 palabras con las que están escritas las frases de la app.
+// Las 200 palabras con las que están escritas las tandas de VRChat (1–5).
 // No existe un corpus público de VRChat, así que la lista sale de las palabras
 // más frecuentes del inglés hablado (conversación informal, no texto escrito)
 // más el vocabulario que se oye en cualquier instancia: micro, avatar, mundo…
 // Las contracciones cuentan como palabra propia porque así se dicen.
-// validar-frases.js exige que todas las frases usen solo estas.
+// validar-frases.mts exige que las frases de VRChat usen solo estas.
+// Las entrevistas (tandas 6–10) usan vocabulario adicional cubierto por dictionary.ts.
 export const PALABRAS_CONVERSACION: string[] = [
 // pronombres y determinantes
 "i","me","my","you","your","he","him","she","her","it","we","us","they","them",
