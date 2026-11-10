@@ -109,22 +109,24 @@ Las respuestas de entrevistas son **ejemplos de práctica**: adáptalas a tu exp
 
 El selector agrupa las tandas en **VRChat** (1–5) y **Entrevistas de programación** (6–10).
 Cada tanda tiene 50 frases y conserva su propio progreso y sus rondas. Por defecto se abre
-**Tanda 6 · Perfil**; la actualización la activa una sola vez, sin borrar lo practicado.
-Después se respeta la tanda que elijas. La barra naranja muestra tu avance en la tanda actual.
+**Tanda 6 · Perfil**. Las entrevistas se adaptaron a **inglés básico para empezar**:
+frases de 3–8 palabras, vocabulario cotidiano y una sola idea por frase.
+La sustitución reinicia únicamente el avance de entrevistas; **VRChat conserva su progreso**.
+Si estabas practicando entrevistas, vuelves a la tanda 6 una sola vez. Después se respeta tu elección.
 
 | Tanda | Contenido |
 |---|---|
 | 1–5 | Conversación en VRChat: preguntas, reacciones, micro, avatares y planes |
-| 6 · Perfil | Presentarte, experiencia, motivación, fortalezas y objetivos |
-| 7 · Equipo | Proyectos, colaboración, decisiones, feedback y situaciones de trabajo |
-| 8 · Código | Aclarar requisitos, explicar algoritmos, complejidad y casos límite |
-| 9 · Web | JavaScript, TypeScript, React, accesibilidad, APIs y PostgreSQL |
-| 10 · Sistemas | Arquitectura, pruebas, producción, uso responsable de IA y preguntas al equipo |
+| 6 · Perfil | Presentarte y hablar de lo que sabes hacer |
+| 7 · Trabajo | Contar tu trabajo diario y hablar de tu equipo |
+| 8 · Conversación | Pedir ayuda, repetir una pregunta y ganar tiempo para pensar |
+| 9 · Código básico | Frases sencillas sobre páginas, código, pruebas y errores |
+| 10 · Entrevista | Horarios, disponibilidad y preguntas básicas sobre el puesto |
 
 El temario de entrevistas se revisó el **9 de noviembre de 2026** con guías públicas de
 Microsoft, Atlassian y Amazon (véase `docs/entrevistas.md`). Las frases son originales para
-practicar inglés: no son preguntas filtradas ni un ranking de frecuencia. El uso de IA en una
-entrevista depende de las reglas del proceso; pregunta antes de usarla.
+practicar inglés: no son preguntas filtradas ni un ranking de frecuencia. Las guías dan contexto,
+pero este bloque **no exige explicar teoría técnica avanzada** ni certifica un nivel de inglés.
 
 ### 2. Escucha la frase
 
@@ -304,8 +306,10 @@ npm run dev        # http://localhost:8082
 
 > [!CAUTION]
 > El progreso se guarda **por la posición** de cada frase. No reordenes ni reescribas frases
-> existentes: añade las nuevas al final. Si hay que reescribirlas, sube `PHRASES_VERSION` en
-> `src/lib/state.ts` para que el progreso antiguo se descarte limpiamente.
+> existentes sin una migración: añade las nuevas al final. Las entrevistas tienen una versión
+> propia, `INTERVIEW_PHRASES_VERSION`, para reiniciar solo sus índices y rondas al reescribirlas,
+> también al importar un archivo antiguo. No subas la versión global para un cambio solo de entrevistas:
+> borraría innecesariamente el progreso de VRChat.
 
 ---
 

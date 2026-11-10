@@ -48,12 +48,13 @@ if (INTOCABLES) { console.log('   heredados en las frases 1-' + INTOCABLES + ' (
   heredados.forEach(c => console.log('     ' + c)); }
 
 // 3) variedad de arranques por tanda
-// Listón: 89 arranques distintos por cada 100 frases, proporcional al tamaño de la tanda.
-console.log('\n3) arranques distintos por tanda (listón: >= 89 por cada 100):');
+// VRChat conserva su listón; en inglés básico se permite repetir estructuras útiles.
+console.log('\n3) arranques distintos por tanda (VRChat >= 89%; entrevistas básicas >= 60%):');
 const flojas = [];
 SETS.forEach((s, idx) => {
   const c = new Set(P.slice(s.start, s.end).map(p => norm(p[0]).split(' ').slice(0, 3).join(' ')));
-  if (c.size < Math.ceil((s.end - s.start) * 0.89)) { flojas.push(idx + 1); fallos++; }
+  const minimo = s.group === 'VRChat' ? 0.89 : 0.60;
+  if (c.size < Math.ceil((s.end - s.start) * minimo)) { flojas.push(idx + 1); fallos++; }
   process.stdout.write('   t' + String(idx + 1).padStart(2) + ':' + String(c.size).padStart(4) + (idx % 6 === 5 ? '\n' : ''));
 });
 console.log('\n   tandas por debajo del listón:', flojas.length ? flojas.join(', ') : 'ninguna');
@@ -100,6 +101,13 @@ const categoriasPorTanda = ['entrevista personal', 'entrevista equipo', 'entrevi
 const temasCorrectos = entrevistaSets.every((s, i) => P.slice(s.start, s.end).every(p => p[2] === categoriasPorTanda[i]));
 console.log('   entrevistas en su tema   :', temasCorrectos ? 'SI' : 'NO');
 if (!temasCorrectos) fallos++;
+// La longitud no certifica nivel: revisar también vocabulario, gramática y una sola idea.
+const frasesLargas = entrevistaSets.flatMap(s => P.slice(s.start, s.end)).filter(p => {
+  const n = p[0].trim().split(/\s+/).length;
+  return n < 3 || n > 8;
+});
+console.log('   entrevistas de 3–8 palabras:', frasesLargas.length ? 'NO' : 'SI');
+if (frasesLargas.length) { frasesLargas.forEach(p => console.log('     ' + p[0])); fallos++; }
 
 console.log('\n' + (fallos ? 'FALLOS: ' + fallos : '*** TODO CORRECTO ***'));
 process.exit(fallos ? 1 : 0);

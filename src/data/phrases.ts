@@ -282,7 +282,7 @@ export type PhraseSet = {
   end: number;
 };
 
-const INTERVIEW_TOPICS = ["Perfil", "Equipo", "Código", "Web", "Sistemas"];
+const INTERVIEW_TOPICS = ["Perfil", "Trabajo", "Conversación", "Código básico", "Entrevista"];
 
 export const SETS: PhraseSet[] = Array.from(
   { length: Math.ceil(PHRASES.length / TANDA) },

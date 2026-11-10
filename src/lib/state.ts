@@ -9,8 +9,10 @@ import { PHRASES, SETS, type PhraseSet } from "@/data/phrases";
 
 export const STORAGE_KEY = "speakenzo.v2";
 const OLD_STORAGE_KEY = "speakenzo.v1";
-// Sube cuando se reescriben frases ya publicadas; ver la migración en loadState().
+// Versión del catálogo original. Las entrevistas tienen su propia migración
+// para no borrar el progreso de VRChat cuando solo cambian esas frases.
 const PHRASES_VERSION = 4;
+const INTERVIEW_PHRASES_VERSION = 2;
 
 export type Lang = "en-US" | "en-GB" | "en-AU" | "en-CA";
 
@@ -37,6 +39,7 @@ export type PhraseRecord = { attempts: number; fails: number; bestScore: number 
 
 export type AppState = {
   phrasesVersion: number;
+  interviewPhrasesVersion: number;
   rounds: Record<string, number>;
   queue: number[];
   current: number | null;
@@ -72,6 +75,7 @@ export function roundsDone(state: AppState, value: string): number {
 
 export const defaultState = (): AppState => ({
   phrasesVersion: PHRASES_VERSION,
+  interviewPhrasesVersion: INTERVIEW_PHRASES_VERSION,
   rounds: {},
   queue: [],
   current: null,
@@ -135,11 +139,27 @@ export function loadState(): AppState {
     }
     st.phrasesVersion = PHRASES_VERSION;
     if (st.current === null || !PHRASES[st.current]) { st.current = null; st.queue = []; }
-    return st;
+    return migrateInterviewPhrases(st, saved.interviewPhrasesVersion);
   } catch (e) {
     console.warn("Progreso corrupto, empezando de cero", e);
     return defaultState();
   }
+}
+
+/** Las entrevistas básicas reemplazan índices 250–499, no el catálogo de VRChat. */
+function migrateInterviewPhrases(st: AppState, savedVersion: unknown): AppState {
+  if ((typeof savedVersion === "number" ? savedVersion : 1) < INTERVIEW_PHRASES_VERSION) {
+    st.mastered = Object.fromEntries(Object.entries(st.mastered ?? {}).filter(([id]) => Number(id) < 250));
+    st.records = Object.fromEntries(Object.entries(st.records ?? {}).filter(([id]) => Number(id) < 250));
+    st.rounds = Object.fromEntries(Object.entries(st.rounds ?? {}).filter(([value]) =>
+      SET_BY_ID[value.split(":")[1]]?.group !== "Entrevistas de programación"));
+    st.queue = (st.queue ?? []).filter((i) => i < 250);
+    if (st.current !== null && st.current >= 250) st.current = null;
+    const active = SET_BY_ID[st.settings.category.split(":")[1]];
+    if (active?.group === "Entrevistas de programación") st.settings.category = DEFAULT_SET;
+  }
+  st.interviewPhrasesVersion = INTERVIEW_PHRASES_VERSION;
+  return st;
 }
 
 function fromOldSettings(): AppState {
@@ -292,5 +312,5 @@ export function fromImported(data: unknown): AppState {
   const base = defaultState();
   const st: AppState = { ...base, ...d, settings: { ...base.settings, ...(d.settings || {}) } } as AppState;
   if (!st.settings.category.startsWith("set:")) st.settings.category = DEFAULT_SET;
-  return st;
+  return migrateInterviewPhrases(st, d.interviewPhrasesVersion);
 }

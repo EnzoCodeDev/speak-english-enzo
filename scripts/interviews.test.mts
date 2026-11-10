@@ -83,10 +83,72 @@ test("cada tanda nueva tiene 50 frases traducidas de su tema y arranques variado
     assert.equal(phrases.length, 50);
     assert.ok(phrases.every(p => p.length === 3 && p.every(x => x.trim()) && p[2] === categories[i]));
     const starts = new Set(phrases.map(([en]) => en.toLowerCase().replace(/[^a-z0-9 ]/g, "").trim().split(/\s+/).slice(0, 3).join(" ")));
-    assert.ok(starts.size >= 45, `${set.label}: ${starts.size} arranques`);
+    assert.ok(starts.size >= 30, `${set.label}: ${starts.size} arranques`);
     assert.ok(phrases.some(([en]) => en.endsWith("?")), set.label);
     assert.ok(phrases.some(([en]) => !en.endsWith("?")), set.label);
   }
+});
+
+test("entrevistas para empezar: frases de 3 a 8 palabras sin teoría avanzada", () => {
+  const advanced = /\b(architecture|complexity|recursive|recursion|transactions|idempotency|tradeoffs|authorization|closures|dependencies|distributed|parameterized|onboarding)\b/i;
+  for (const [en] of PHRASES.slice(250)) {
+    const length = en.trim().split(/\s+/).length;
+    assert.ok(length >= 3 && length <= 8, `${length} palabras: ${en}`);
+    assert.ok(!advanced.test(en), `Vocabulario innecesariamente avanzado: ${en}`);
+  }
+});
+
+test("simplificar entrevistas conserva el progreso de VRChat y reinicia solo lo reescrito", () => {
+  const saved = previousState();
+  saved.settings.startedOnInterviews = true;
+  saved.settings.category = "set:set10";
+  saved.mastered[300] = { score: 90, attempts: 3, successes: 2, date: "2026-11-09", round: 2 };
+  saved.records[300] = { attempts: 3, fails: 1, bestScore: 90 };
+  saved.rounds["set:set7"] = 2;
+  saved.current = 300;
+  saved.queue = [301, 302];
+  // Sin versión específica: exportación de las primeras entrevistas publicadas.
+  delete (saved as Partial<typeof saved> & { interviewPhrasesVersion?: number }).interviewPhrasesVersion;
+  storage.set(state.STORAGE_KEY, JSON.stringify(saved));
+  const loaded = state.loadState();
+  assert.equal(loaded.settings.category, "set:set6");
+  assert.deepEqual(loaded.mastered, { 0: saved.mastered[0] });
+  assert.deepEqual(loaded.records, { 0: saved.records[0], 249: saved.records[249] });
+  assert.deepEqual(loaded.rounds, { "set:set1": 2, "set:set5": 1 });
+  assert.deepEqual(loaded.stats, saved.stats);
+  assert.equal(loaded.current, null);
+  assert.deepEqual(loaded.queue, []);
+  assert.equal(loaded.settings.threshold, 85);
+  // También al importar: el merge con defaults no debe esconder la versión ausente.
+  const imported = state.fromImported(JSON.parse(JSON.stringify(saved)));
+  assert.deepEqual(imported.mastered, loaded.mastered);
+  assert.deepEqual(imported.records, loaded.records);
+  assert.deepEqual(imported.rounds, loaded.rounds);
+  assert.equal(imported.settings.category, "set:set6");
+  // Una vez migrado, el progreso nuevo y la tanda elegida deben sobrevivir.
+  state.setCategory(loaded, "set:set9");
+  loaded.mastered[400] = saved.mastered[300];
+  loaded.records[400] = saved.records[300];
+  state.saveState(loaded);
+  const reloaded = state.loadState();
+  assert.equal(reloaded.settings.category, "set:set9");
+  assert.deepEqual(reloaded.mastered[400], loaded.mastered[400]);
+  assert.deepEqual(reloaded.records[400], loaded.records[400]);
+  assert.deepEqual(state.fromImported(JSON.parse(JSON.stringify(loaded))).mastered, loaded.mastered);
+});
+
+test("la migración de entrevistas deja intacta una sesión activa de VRChat", () => {
+  const saved = previousState();
+  saved.settings.startedOnInterviews = true;
+  delete (saved as Partial<typeof saved> & { interviewPhrasesVersion?: number }).interviewPhrasesVersion;
+  storage.set(state.STORAGE_KEY, JSON.stringify(saved));
+  const loaded = state.loadState();
+  assert.equal(loaded.settings.category, saved.settings.category);
+  assert.equal(loaded.current, 249);
+  assert.deepEqual(loaded.queue, saved.queue);
+  assert.deepEqual(loaded.mastered, saved.mastered);
+  assert.deepEqual(loaded.records, saved.records);
+  assert.deepEqual(loaded.rounds, saved.rounds);
 });
 
 test("todas las palabras nuevas tocables tienen significado y pronunciación", () => {
@@ -118,11 +180,9 @@ test("el diccionario conserva los sentidos usados en las entrevistas de programa
     // Ya son correctos: no confundir devolver un resultado ni un formulario.
     ["return", /devolver/], ["form", /formulario/],
   ];
-  const words = new Set(PHRASES.slice(250).flatMap(([en]) =>
-    en.toLowerCase().match(/[a-z]+(?:'[a-z]+)?/g) ?? []));
   const missing: string[] = [];
   for (const [key, sense] of senses) {
-    assert.ok(words.has(key), `La regresión debe cubrir vocabulario real: ${key}`);
+    // Se conservan también sentidos técnicos aunque ya no se enseñen en el bloque básico.
     if (!sense.test(DICT[key][0])) missing.push(`${key}: ${DICT[key][0]}`);
   }
   assert.deepEqual(missing, [], "Faltan sentidos del contexto de entrevistas");
@@ -136,15 +196,17 @@ test("las 250 frases nuevas puntúan 100 con transcripción correcta", () => {
 });
 
 test("las siglas técnicas aceptan letras separadas en una transcripción", () => {
-  const variants: [RegExp, string][] = [
-    [/\bAPI\b/g, "A P I"], [/\bAI\b/g, "A I"],
-    [/\bHTTP\b/g, "H T T P"], [/\bHTML\b/g, "H T M L"],
-    [/\bCSS\b/g, "C S S"], [/\bSQL\b/g, "S Q L"],
-    [/\bSQL\b/g, "sequel"], [/\bPostgreSQL\b/g, "Postgre S Q L"],
+  const variants: [string, string][] = [
+    ["API", "A P I"], ["AI", "A I"],
+    ["HTTP", "H T T P"], ["HTML", "H T M L"],
+    ["CSS", "C S S"], ["SQL", "S Q L"],
+    ["SQL", "sequel"], ["PostgreSQL", "Postgre S Q L"],
   ];
-  for (const [pattern, spoken] of variants) {
+  for (const [canonical, spoken] of variants) {
+    const pattern = new RegExp(`\\b${canonical}\\b`, "g");
     const phrases = PHRASES.slice(250).filter(([en]) => new RegExp(pattern.source).test(en));
-    assert.ok(phrases.length > 0, pattern.source);
+    // La normalización de siglas sigue cubierta aunque el temario básico no use todas.
+    assert.equal(evaluate(`I use ${canonical}.`, `I use ${spoken}.`).score, 100);
     for (const [en] of phrases) {
       assert.equal(evaluate(en, en.replace(pattern, spoken)).score, 100, `${en} → ${spoken}`);
     }

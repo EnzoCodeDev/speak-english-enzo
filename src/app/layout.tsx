@@ -14,7 +14,7 @@ const bricolage = Bricolage_Grotesque({
 export const metadata: Metadata = {
   title: "Speak English Enzo — 500 frases de VRChat y entrevistas de programación",
   description:
-    "Practica en inglés 250 frases de VRChat y 250 de entrevistas de programación. Traducción, diccionario y reconocimiento de voz para entrenar tu pronunciación.",
+    "Practica 250 frases de VRChat y 250 frases cortas de inglés básico para entrevistas de programación. Con traducción, diccionario y reconocimiento de voz.",
   applicationName: "Speak English Enzo",
 };
 
